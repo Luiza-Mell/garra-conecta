@@ -4,33 +4,54 @@ import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  DollarSign, 
-  Users, 
-  Building2, 
+import { Progress } from "@/components/ui/progress";
+import {
+  Users,
+  Building2,
   TrendingUp,
   FileText,
   Calendar,
   Award,
   Target,
-  Loader2
+  Loader2,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  ArrowUpRight,
+  BarChart3,
+  Heart,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+interface ReportWithOrg {
+  id: string;
+  reference_month: string;
+  status: string;
+  participants_count: number | null;
+  activities_description: string | null;
+  results_achieved: string | null;
+  organization_name: string;
+}
 
 interface DashboardData {
   totalOrganizations: number;
   totalReports: number;
   totalParticipants: number;
   approvedReports: number;
-  recentReports: Array<{
-    id: string;
-    reference_month: string;
-    status: string;
-    organization_name: string;
-    participants_count: number | null;
-  }>;
+  draftReports: number;
+  submittedReports: number;
+  recentReports: ReportWithOrg[];
+  organizationNames: string[];
 }
+
+const statusConfig: Record<string, { label: string; className: string; icon: typeof Clock }> = {
+  draft: { label: "Rascunho", className: "status-draft", icon: Clock },
+  submitted: { label: "Enviado", className: "status-submitted", icon: CheckCircle2 },
+  pending: { label: "Pendente", className: "status-pending", icon: AlertCircle },
+  approved: { label: "Aprovado", className: "status-approved", icon: CheckCircle2 },
+  rejected: { label: "Rejeitado", className: "status-rejected", icon: AlertCircle },
+};
 
 const ApoiadorDashboard = () => {
   const { user } = useAuth();
@@ -41,14 +62,19 @@ const ApoiadorDashboard = () => {
     totalReports: 0,
     totalParticipants: 0,
     approvedReports: 0,
+    draftReports: 0,
+    submittedReports: 0,
     recentReports: [],
+    organizationNames: [],
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-      // Fetch supporter info
       const { data: supporterData } = await supabase
         .from("supporters")
         .select("name")
@@ -59,12 +85,15 @@ const ApoiadorDashboard = () => {
         setSupporterName(supporterData.name);
       }
 
-      // Fetch organizations count
       const { count: orgCount } = await supabase
         .from("organizations")
         .select("*", { count: "exact", head: true });
 
-      // Fetch all reports with organization names
+      const { data: orgsData } = await supabase
+        .from("organizations")
+        .select("name")
+        .limit(10);
+
       const { data: reportsData } = await supabase
         .from("monthly_reports")
         .select(`
@@ -72,6 +101,8 @@ const ApoiadorDashboard = () => {
           reference_month,
           status,
           participants_count,
+          activities_description,
+          results_achieved,
           organizations (name)
         `)
         .order("created_at", { ascending: false });
@@ -84,13 +115,16 @@ const ApoiadorDashboard = () => {
         const approvedCount = reportsData.filter(
           (r) => r.status === "approved" || r.status === "submitted"
         ).length;
+        const draftCount = reportsData.filter((r) => r.status === "draft").length;
 
-        const recentReports = reportsData.slice(0, 5).map((r) => ({
+        const recentReports = reportsData.slice(0, 6).map((r) => ({
           id: r.id,
           reference_month: r.reference_month,
           status: r.status,
           organization_name: (r.organizations as { name: string })?.name || "Organização",
           participants_count: r.participants_count,
+          activities_description: r.activities_description,
+          results_achieved: r.results_achieved,
         }));
 
         setData({
@@ -98,7 +132,10 @@ const ApoiadorDashboard = () => {
           totalReports: reportsData.length,
           totalParticipants,
           approvedReports: approvedCount,
+          draftReports: draftCount,
+          submittedReports: approvedCount,
           recentReports,
+          organizationNames: orgsData?.map((o) => o.name) || [],
         });
       }
 
@@ -118,28 +155,32 @@ const ApoiadorDashboard = () => {
     );
   }
 
-  const statusConfig: Record<string, { label: string; className: string }> = {
-    draft: { label: "Rascunho", className: "status-draft" },
-    submitted: { label: "Enviado", className: "status-submitted" },
-    pending: { label: "Pendente", className: "status-pending" },
-    approved: { label: "Aprovado", className: "status-approved" },
-    rejected: { label: "Rejeitado", className: "status-rejected" },
-  };
+  const statusDistribution = [
+    { label: "Enviados", count: data.submittedReports, color: "bg-success" },
+    { label: "Rascunhos", count: data.draftReports, color: "bg-warning" },
+    { label: "Outros", count: data.totalReports - data.submittedReports - data.draftReports, color: "bg-muted-foreground" },
+  ];
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Olá, {supporterName || "Apoiador"}!
-          </h1>
-          <p className="text-muted-foreground">
-            Acompanhe o impacto dos projetos que você apoia.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">
+              Olá, {supporterName || "Apoiador"}! 👋
+            </h1>
+            <p className="text-muted-foreground">
+              Acompanhe o impacto dos projetos que você apoia.
+            </p>
+          </div>
+          <Badge className="bg-primary text-primary-foreground px-4 py-2 text-sm">
+            <Heart className="w-4 h-4 mr-2" />
+            Apoiador Garra
+          </Badge>
         </div>
 
-        {/* Impact Summary */}
+        {/* Impact Hero Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="card-hover">
             <CardContent className="pt-6">
@@ -198,40 +239,75 @@ const ApoiadorDashboard = () => {
           </Card>
         </div>
 
-        {/* Impact Highlights */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        {/* Insights Row */}
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Impact Card */}
-          <Card className="bg-hero-gradient text-primary-foreground">
+          <Card className="bg-hero-gradient text-primary-foreground lg:col-span-2">
             <CardContent className="pt-6">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Impacto Total</h3>
-                  <p className="text-4xl font-bold mb-1">{data.totalParticipants.toLocaleString()}</p>
-                  <p className="text-sm opacity-80">pessoas impactadas pelos projetos</p>
+                  <h3 className="text-lg font-semibold mb-1">Impacto Social Total</h3>
+                  <p className="text-5xl font-bold mb-2">{data.totalParticipants.toLocaleString()}</p>
+                  <p className="text-sm opacity-80">
+                    pessoas impactadas por {data.totalOrganizations} organização(ões)
+                  </p>
                 </div>
-                <div className="w-16 h-16 rounded-full bg-primary-foreground/10 flex items-center justify-center">
-                  <Target className="w-8 h-8" />
+                <div className="w-20 h-20 rounded-full bg-primary-foreground/10 flex items-center justify-center">
+                  <Target className="w-10 h-10" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Growth Card */}
+          {/* Status Distribution */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Relatórios Recebidos</h3>
-                  <p className="text-4xl font-bold text-foreground mb-1">{data.totalReports}</p>
-                  <p className="text-sm text-muted-foreground">relatórios de acompanhamento</p>
-                </div>
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="w-8 h-8 text-primary" />
-                </div>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                Status dos Relatórios
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {statusDistribution.map((item) => (
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{item.label}</span>
+                      <span className="font-medium text-foreground">{item.count}</span>
+                    </div>
+                    <Progress
+                      value={data.totalReports > 0 ? (item.count / data.totalReports) * 100 : 0}
+                      className="h-2"
+                    />
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Organizations List */}
+        {data.organizationNames.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-primary" />
+                Organizações Apoiadas
+              </CardTitle>
+              <CardDescription>Instituições que recebem seu apoio</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {data.organizationNames.map((name, i) => (
+                  <Badge key={i} variant="secondary" className="px-3 py-1.5 text-sm">
+                    <Building2 className="w-3 h-3 mr-1.5" />
+                    {name}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recent Reports */}
         <Card>
@@ -253,31 +329,38 @@ const ApoiadorDashboard = () => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid md:grid-cols-2 gap-3">
                 {data.recentReports.map((report) => {
                   const status = statusConfig[report.status] || statusConfig.draft;
+                  const StatusIcon = status.icon;
                   return (
                     <div
                       key={report.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors gap-3"
+                      className="p-4 rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Building2 className="w-5 h-5 text-primary" />
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Building2 className="w-4 h-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-foreground">{report.organization_name}</p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                              {format(new Date(report.reference_month), "MMMM yyyy", { locale: ptBR })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {report.organization_name}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(report.reference_month), "MMMM yyyy", { locale: ptBR })}
-                            {report.participants_count && (
-                              <span> • {report.participants_count} beneficiários</span>
-                            )}
-                          </p>
-                        </div>
+                        <Badge className={`${status.className} text-xs`}>
+                          <StatusIcon className="w-3 h-3 mr-1" />
+                          {status.label}
+                        </Badge>
                       </div>
-                      <Badge className={status.className}>{status.label}</Badge>
+                      {report.participants_count && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
+                          <Users className="w-3 h-3" />
+                          {report.participants_count} beneficiários
+                        </div>
+                      )}
                     </div>
                   );
                 })}

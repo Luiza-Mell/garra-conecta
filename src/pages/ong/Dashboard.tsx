@@ -6,18 +6,23 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
-  PlusCircle, 
-  Clock, 
-  CheckCircle2, 
+import { Progress } from "@/components/ui/progress";
+import {
+  FileText,
+  PlusCircle,
+  Clock,
+  CheckCircle2,
   AlertCircle,
   TrendingUp,
   Users,
   Calendar,
-  Loader2
+  Loader2,
+  Target,
+  BarChart3,
+  ArrowUpRight,
+  DollarSign,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, startOfYear, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 interface Report {
@@ -26,6 +31,10 @@ interface Report {
   status: string;
   created_at: string;
   participants_count: number | null;
+  activities_description: string | null;
+  challenges: string | null;
+  results_achieved: string | null;
+  funds_usage: string | null;
 }
 
 interface Organization {
@@ -45,13 +54,16 @@ const OngDashboard = () => {
   const { user } = useAuth();
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
+  const [allReports, setAllReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-      // Fetch organization
       const { data: orgData } = await supabase
         .from("organizations")
         .select("id, name")
@@ -61,16 +73,15 @@ const OngDashboard = () => {
       if (orgData) {
         setOrganization(orgData);
 
-        // Fetch reports
         const { data: reportsData } = await supabase
           .from("monthly_reports")
-          .select("id, reference_month, status, created_at, participants_count")
+          .select("id, reference_month, status, created_at, participants_count, activities_description, challenges, results_achieved, funds_usage")
           .eq("organization_id", orgData.id)
-          .order("reference_month", { ascending: false })
-          .limit(5);
+          .order("reference_month", { ascending: false });
 
         if (reportsData) {
-          setReports(reportsData);
+          setAllReports(reportsData);
+          setReports(reportsData.slice(0, 5));
         }
       }
 
@@ -90,12 +101,32 @@ const OngDashboard = () => {
     );
   }
 
+  const yearStart = startOfYear(new Date());
+  const reportsThisYear = allReports.filter((r) =>
+    isAfter(new Date(r.reference_month), yearStart)
+  );
+  const currentMonth = new Date().getMonth() + 1;
+  const completionRate = currentMonth > 0 ? Math.round((reportsThisYear.length / currentMonth) * 100) : 0;
+
   const stats = {
-    totalReports: reports.length,
-    submittedReports: reports.filter(r => r.status === "submitted" || r.status === "approved").length,
-    draftReports: reports.filter(r => r.status === "draft").length,
-    totalParticipants: reports.reduce((acc, r) => acc + (r.participants_count || 0), 0),
+    totalReports: allReports.length,
+    submittedReports: allReports.filter((r) => r.status === "submitted" || r.status === "approved").length,
+    draftReports: allReports.filter((r) => r.status === "draft").length,
+    totalParticipants: allReports.reduce((acc, r) => acc + (r.participants_count || 0), 0),
+    reportsWithActivities: allReports.filter((r) => r.activities_description).length,
+    reportsWithChallenges: allReports.filter((r) => r.challenges).length,
+    reportsWithFinancial: allReports.filter((r) => r.funds_usage).length,
   };
+
+  const monthlyParticipants = reportsThisYear
+    .filter((r) => r.participants_count)
+    .map((r) => ({
+      month: format(new Date(r.reference_month), "MMM", { locale: ptBR }),
+      count: r.participants_count || 0,
+    }))
+    .reverse();
+
+  const maxParticipants = Math.max(...monthlyParticipants.map((m) => m.count), 1);
 
   return (
     <DashboardLayout>
@@ -104,13 +135,13 @@ const OngDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Olá, {organization?.name || "Organização"}!
+              Olá, {organization?.name || "Organização"}! 👋
             </h1>
             <p className="text-muted-foreground">
-              Acompanhe seus relatórios e envie novos dados mensais.
+              Acompanhe seus relatórios e indicadores de impacto.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="shadow-md">
             <Link to="/ong/novo-relatorio">
               <PlusCircle className="w-4 h-4 mr-2" />
               Novo Relatório
@@ -120,57 +151,160 @@ const OngDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
+          <Card className="card-hover">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats.totalReports}</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.totalReports}</p>
                   <p className="text-xs text-muted-foreground">Relatórios Totais</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-success" />
+                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats.submittedReports}</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.submittedReports}</p>
                   <p className="text-xs text-muted-foreground">Enviados</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-warning" />
+                <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-warning" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats.draftReports}</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.draftReports}</p>
                   <p className="text-xs text-muted-foreground">Rascunhos</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                  <Users className="w-5 h-5 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
+                  <Users className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats.totalParticipants}</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.totalParticipants.toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">Beneficiários</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Analytics Row */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Completion Rate */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Target className="w-4 h-4 text-primary" />
+                Taxa de Envio Anual
+              </CardTitle>
+              <CardDescription>Relatórios enviados vs meses do ano</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-end justify-between">
+                  <p className="text-4xl font-bold text-foreground">{Math.min(completionRate, 100)}%</p>
+                  <p className="text-sm text-muted-foreground">
+                    {reportsThisYear.length}/{currentMonth} meses
+                  </p>
+                </div>
+                <Progress value={Math.min(completionRate, 100)} className="h-3" />
+                <p className="text-xs text-muted-foreground">
+                  {completionRate >= 100
+                    ? "✅ Todos os relatórios em dia!"
+                    : `Faltam ${currentMonth - reportsThisYear.length} relatório(s) para ficar em dia`}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Beneficiaries Chart */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                Beneficiários por Mês
+              </CardTitle>
+              <CardDescription>Evolução mensal {new Date().getFullYear()}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {monthlyParticipants.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  Nenhum dado de beneficiários registrado
+                </p>
+              ) : (
+                <div className="flex items-end gap-2 h-32">
+                  {monthlyParticipants.map((m, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <span className="text-[10px] font-medium text-foreground">{m.count}</span>
+                      <div
+                        className="w-full bg-primary/80 rounded-t-md transition-all"
+                        style={{ height: `${(m.count / maxParticipants) * 100}%`, minHeight: "4px" }}
+                      />
+                      <span className="text-[10px] text-muted-foreground capitalize">{m.month}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Report Quality */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                Qualidade dos Relatórios
+              </CardTitle>
+              <CardDescription>Preenchimento das seções</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Atividades</span>
+                    <span className="font-medium text-foreground">
+                      {allReports.length > 0 ? Math.round((stats.reportsWithActivities / allReports.length) * 100) : 0}%
+                    </span>
+                  </div>
+                  <Progress value={allReports.length > 0 ? (stats.reportsWithActivities / allReports.length) * 100 : 0} className="h-2" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Desafios</span>
+                    <span className="font-medium text-foreground">
+                      {allReports.length > 0 ? Math.round((stats.reportsWithChallenges / allReports.length) * 100) : 0}%
+                    </span>
+                  </div>
+                  <Progress value={allReports.length > 0 ? (stats.reportsWithChallenges / allReports.length) * 100 : 0} className="h-2" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Financeiro</span>
+                    <span className="font-medium text-foreground">
+                      {allReports.length > 0 ? Math.round((stats.reportsWithFinancial / allReports.length) * 100) : 0}%
+                    </span>
+                  </div>
+                  <Progress value={allReports.length > 0 ? (stats.reportsWithFinancial / allReports.length) * 100 : 0} className="h-2" />
                 </div>
               </div>
             </CardContent>
@@ -180,13 +314,23 @@ const OngDashboard = () => {
         {/* Recent Reports */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-primary" />
-              Relatórios Recentes
-            </CardTitle>
-            <CardDescription>
-              Seus últimos relatórios enviados e em andamento
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  Relatórios Recentes
+                </CardTitle>
+                <CardDescription>
+                  Seus últimos relatórios enviados e em andamento
+                </CardDescription>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/ong/relatorios">
+                  Ver todos
+                  <ArrowUpRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {reports.length === 0 ? (
@@ -223,6 +367,9 @@ const OngDashboard = () => {
                           </p>
                           <p className="text-sm text-muted-foreground">
                             Criado em {format(new Date(report.created_at), "dd/MM/yyyy")}
+                            {report.participants_count && (
+                              <span> • {report.participants_count} beneficiários</span>
+                            )}
                           </p>
                         </div>
                       </div>

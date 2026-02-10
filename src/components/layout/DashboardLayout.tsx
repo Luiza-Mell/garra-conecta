@@ -1,7 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -13,8 +15,14 @@ import {
   User,
   Building2,
   HandHeart,
+  Clock,
+  Bell,
+  HelpCircle,
+  Settings,
+  BarChart3,
 } from "lucide-react";
-import { useState } from "react";
+import ChatBot from "@/components/ChatBot";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -25,6 +33,32 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      if (!user) return;
+
+      if (userRole === "organization") {
+        const { data: orgData } = await supabase
+          .from("organizations")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (orgData) {
+          const { count } = await supabase
+            .from("monthly_reports")
+            .select("*", { count: "exact", head: true })
+            .eq("organization_id", orgData.id)
+            .eq("status", "draft");
+          setPendingCount(count || 0);
+        }
+      }
+    };
+
+    fetchPending();
+  }, [user, userRole]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -34,11 +68,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const orgNavItems = [
     { href: "/ong/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/ong/relatorios", label: "Relatórios", icon: FileText },
+    {
+      href: "/ong/pendentes",
+      label: "Pendentes",
+      icon: Clock,
+      badge: pendingCount > 0 ? pendingCount : undefined,
+    },
     { href: "/ong/novo-relatorio", label: "Novo Relatório", icon: PlusCircle },
+    { href: "/ong/indicadores", label: "Indicadores", icon: BarChart3 },
   ];
 
   const supporterNavItems = [
     { href: "/apoiador/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/apoiador/organizacoes", label: "Organizações", icon: Building2 },
+    { href: "/apoiador/relatorios", label: "Relatórios", icon: FileText },
   ];
 
   const navItems = userRole === "organization" ? orgNavItems : supporterNavItems;
@@ -82,7 +125,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
-                  {user?.email}
+                  {user?.email || "Visitante"}
                 </p>
                 <p className="text-xs text-muted-foreground">{roleLabel}</p>
               </div>
@@ -90,7 +133,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+              Menu Principal
+            </p>
             {navItems.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -99,17 +145,39 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
                 >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
+                  <div className="flex items-center gap-3">
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </div>
+                  {"badge" in item && (item as { badge?: number }).badge && (
+                    <Badge variant="destructive" className="text-xs px-1.5 py-0.5 min-w-[1.25rem] flex items-center justify-center">
+                      {(item as { badge?: number }).badge}
+                    </Badge>
+                  )}
                 </Link>
               );
             })}
+
+            <div className="pt-4 mt-4 border-t border-border">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+                Suporte
+              </p>
+              <a
+                href="https://wa.me/5511998162471?text=Olá! Preciso de ajuda com a plataforma do Instituto Garra."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <HelpCircle className="w-5 h-5" />
+                Central de Ajuda
+              </a>
+            </div>
           </nav>
 
           {/* Sign Out */}
@@ -145,7 +213,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button className="relative text-muted-foreground hover:text-foreground transition-colors">
+              <Bell className="w-5 h-5" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
               <User className="w-4 h-4 text-primary" />
             </div>
@@ -155,6 +231,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Page Content */}
         <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
+
+      {/* Floating elements */}
+      <WhatsAppButton />
+      <ChatBot />
     </div>
   );
 };

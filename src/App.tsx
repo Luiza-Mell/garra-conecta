@@ -15,6 +15,8 @@ import NotFound from "./pages/NotFound";
 import OngDashboard from "./pages/ong/Dashboard";
 import OngReports from "./pages/ong/Reports";
 import NewReport from "./pages/ong/NewReport";
+import PendingReports from "./pages/ong/PendingReports";
+import Indicators from "./pages/ong/Indicators";
 
 // Apoiador Pages
 import ApoiadorDashboard from "./pages/apoiador/Dashboard";
@@ -37,6 +39,8 @@ const App = () => (
             <Route path="/ong/dashboard" element={<OngDashboard />} />
             <Route path="/ong/relatorios" element={<OngReports />} />
             <Route path="/ong/novo-relatorio" element={<NewReport />} />
+            <Route path="/ong/pendentes" element={<PendingReports />} />
+            <Route path="/ong/indicadores" element={<Indicators />} />
 
             {/* Apoiador Routes */}
             <Route path="/apoiador/dashboard" element={<ApoiadorDashboard />} />
