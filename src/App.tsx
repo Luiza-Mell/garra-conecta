@@ -34,40 +34,12 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
 
             {/* ONG Routes */}
-            <Route
-              path="/ong/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["organization"]}>
-                  <OngDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ong/relatorios"
-              element={
-                <ProtectedRoute allowedRoles={["organization"]}>
-                  <OngReports />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ong/novo-relatorio"
-              element={
-                <ProtectedRoute allowedRoles={["organization"]}>
-                  <NewReport />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/ong/dashboard" element={<OngDashboard />} />
+            <Route path="/ong/relatorios" element={<OngReports />} />
+            <Route path="/ong/novo-relatorio" element={<NewReport />} />
 
             {/* Apoiador Routes */}
-            <Route
-              path="/apoiador/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["supporter"]}>
-                  <ApoiadorDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/apoiador/dashboard" element={<ApoiadorDashboard />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
