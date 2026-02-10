@@ -76,48 +76,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     const redirectUrl = `${window.location.origin}/`;
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
+        data: {
+          role,
+          full_name: (additionalData?.name as string) || null,
+          organization_name: (additionalData?.organizationName as string) || null,
+          cnpj: (additionalData?.cnpj as string) || null,
+          company: (additionalData?.company as string) || null,
+        },
       },
     });
 
-    if (error) {
-      return { error };
-    }
-
-    if (data.user) {
-      // Create profile
-      await supabase.from("profiles").insert({
-        user_id: data.user.id,
-        full_name: additionalData?.name as string || null,
-      });
-
-      // Create user role
-      await supabase.from("user_roles").insert({
-        user_id: data.user.id,
-        role: role,
-      });
-
-      // Create organization or supporter record based on role
-      if (role === "organization") {
-        await supabase.from("organizations").insert({
-          user_id: data.user.id,
-          name: additionalData?.organizationName as string || "Nova Organização",
-          cnpj: additionalData?.cnpj as string || null,
-        });
-      } else if (role === "supporter") {
-        await supabase.from("supporters").insert({
-          user_id: data.user.id,
-          name: additionalData?.name as string || "Novo Apoiador",
-          company: additionalData?.company as string || null,
-        });
-      }
-    }
-
-    return { error: null };
+    return { error: error || null };
   };
 
   const signIn = async (email: string, password: string) => {
