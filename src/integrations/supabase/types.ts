@@ -42,9 +42,12 @@ export type Database = {
           personal_report: string | null
           project_description: string | null
           reference_month: string
+          rejection_reason: string | null
           responsible_person: string | null
           results_achieved: string | null
           revenue_diversification: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           status: string
           submitted_at: string | null
           updated_at: string
@@ -77,9 +80,12 @@ export type Database = {
           personal_report?: string | null
           project_description?: string | null
           reference_month: string
+          rejection_reason?: string | null
           responsible_person?: string | null
           results_achieved?: string | null
           revenue_diversification?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: string
           submitted_at?: string | null
           updated_at?: string
@@ -112,9 +118,12 @@ export type Database = {
           personal_report?: string | null
           project_description?: string | null
           reference_month?: string
+          rejection_reason?: string | null
           responsible_person?: string | null
           results_achieved?: string | null
           revenue_diversification?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: string
           submitted_at?: string | null
           updated_at?: string
@@ -129,6 +138,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          related_report_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          related_report_id?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          related_report_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       organizations: {
         Row: {
