@@ -78,14 +78,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { href: "/ong/indicadores", label: "Indicadores", icon: BarChart3 },
   ];
 
-  const supporterNavItems = [
-    { href: "/apoiador/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/apoiador/organizacoes", label: "Organizações", icon: Building2 },
-    { href: "/apoiador/relatorios", label: "Relatórios", icon: FileText },
+  const adminNavItems = [
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/revisao", label: "Revisão de Relatórios", icon: FileText },
+    { href: "/admin/organizacoes", label: "Organizações", icon: Building2 },
   ];
 
-  const navItems = userRole === "organization" ? orgNavItems : supporterNavItems;
-  const roleLabel = userRole === "organization" ? "Organização" : "Apoiador";
+  const navItems = userRole === "organization" ? orgNavItems : adminNavItems;
+  const roleLabel = userRole === "organization" ? "Organização" : "Administrador";
+  const isAdmin = userRole === "admin" || userRole === "supporter";
 
   return (
     <div className="min-h-screen bg-background flex">

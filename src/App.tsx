@@ -18,8 +18,10 @@ import NewReport from "./pages/ong/NewReport";
 import PendingReports from "./pages/ong/PendingReports";
 import Indicators from "./pages/ong/Indicators";
 
-// Apoiador Pages
-import ApoiadorDashboard from "./pages/apoiador/Dashboard";
+// Admin Pages
+import AdminDashboard from "./pages/admin/Dashboard";
+import ReviewReports from "./pages/admin/ReviewReports";
+import AdminOrganizations from "./pages/admin/Organizations";
 
 const queryClient = new QueryClient();
 
@@ -42,8 +44,10 @@ const App = () => (
             <Route path="/ong/pendentes" element={<PendingReports />} />
             <Route path="/ong/indicadores" element={<Indicators />} />
 
-            {/* Apoiador Routes */}
-            <Route path="/apoiador/dashboard" element={<ApoiadorDashboard />} />
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/revisao" element={<ReviewReports />} />
+            <Route path="/admin/organizacoes" element={<AdminOrganizations />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
