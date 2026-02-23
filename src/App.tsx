@@ -18,8 +18,10 @@ import NewReport from "./pages/ong/NewReport";
 import PendingReports from "./pages/ong/PendingReports";
 import Indicators from "./pages/ong/Indicators";
 
-// Apoiador Pages
-import ApoiadorDashboard from "./pages/apoiador/Dashboard";
+// Admin Pages
+import AdminDashboard from "./pages/admin/Dashboard";
+import ReviewReports from "./pages/admin/ReviewReports";
+import AdminOrganizations from "./pages/admin/Organizations";
 
 const queryClient = new QueryClient();
 
