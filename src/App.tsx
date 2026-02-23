@@ -44,8 +44,10 @@ const App = () => (
             <Route path="/ong/pendentes" element={<PendingReports />} />
             <Route path="/ong/indicadores" element={<Indicators />} />
 
-            {/* Apoiador Routes */}
-            <Route path="/apoiador/dashboard" element={<ApoiadorDashboard />} />
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/revisao" element={<ReviewReports />} />
+            <Route path="/admin/organizacoes" element={<AdminOrganizations />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
