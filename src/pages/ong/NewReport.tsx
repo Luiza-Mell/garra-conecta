@@ -411,13 +411,17 @@ const NewReport = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="form_filled_by">Preenchido por</Label>
+                <Label htmlFor="form_filled_by">Preenchido por *</Label>
                 <Input
                   id="form_filled_by"
                   placeholder="Nome de quem preencheu"
                   value={formData.form_filled_by}
                   onChange={(e) => updateFormData("form_filled_by", e.target.value)}
+                  className={isFieldError("form_filled_by") ? "border-destructive" : ""}
                 />
+                {isFieldError("form_filled_by") && (
+                  <p className="text-xs text-destructive">Campo obrigatório</p>
+                )}
               </div>
             </div>
           </div>
