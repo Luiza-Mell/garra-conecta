@@ -49,6 +49,9 @@ const NewReport = () => {
   const [loading, setLoading] = useState(false);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [organizationName, setOrganizationName] = useState("");
+  const [savedReportId, setSavedReportId] = useState<string | null>(null);
+  const [invoiceFiles, setInvoiceFiles] = useState<any[]>([]);
+  const [proofFiles, setProofFiles] = useState<any[]>([]);
 
   // Form data
   const [formData, setFormData] = useState({
