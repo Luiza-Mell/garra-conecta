@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import logoGarra from "@/assets/logo-instituto-garra.svg";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -101,10 +102,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">G</span>
-              </div>
-              <span className="font-bold text-foreground">Instituto Garra</span>
+              <img src={logoGarra} alt="Instituto Garra" className="h-8" />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
