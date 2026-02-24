@@ -112,7 +112,7 @@ const NewReport = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("monthly_reports").insert({
+      const { data, error } = await supabase.from("monthly_reports").insert({
         organization_id: organizationId,
         reference_month: formData.reference_month + "-01",
         status: "draft",
@@ -142,9 +142,10 @@ const NewReport = () => {
         work_life_balance: formData.work_life_balance || null,
         current_needs: formData.current_needs || null,
         how_garra_can_help: formData.how_garra_can_help || null,
-      });
+      }).select("id").single();
 
       if (error) throw error;
+      if (data) setSavedReportId(data.id);
       toast.success("Rascunho salvo com sucesso!");
       navigate("/ong/relatorios");
     } catch (error) {
