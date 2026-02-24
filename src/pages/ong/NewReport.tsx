@@ -445,34 +445,46 @@ const NewReport = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="challenges">Desafios Enfrentados</Label>
+              <Label htmlFor="challenges">Desafios Enfrentados *</Label>
               <Textarea
                 id="challenges"
                 placeholder="Quais foram os principais desafios no período?"
                 value={formData.challenges}
                 onChange={(e) => updateFormData("challenges", e.target.value)}
                 rows={3}
+                className={isFieldError("challenges") ? "border-destructive" : ""}
               />
+              {isFieldError("challenges") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="advances">Avanços Alcançados</Label>
+              <Label htmlFor="advances">Avanços Alcançados *</Label>
               <Textarea
                 id="advances"
                 placeholder="Quais avanços foram conquistados?"
                 value={formData.advances}
                 onChange={(e) => updateFormData("advances", e.target.value)}
                 rows={3}
+                className={isFieldError("advances") ? "border-destructive" : ""}
               />
+              {isFieldError("advances") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="next_steps">Próximos Passos</Label>
+              <Label htmlFor="next_steps">Próximos Passos *</Label>
               <Textarea
                 id="next_steps"
                 placeholder="Quais são os próximos passos planejados?"
                 value={formData.next_steps}
                 onChange={(e) => updateFormData("next_steps", e.target.value)}
                 rows={3}
+                className={isFieldError("next_steps") ? "border-destructive" : ""}
               />
+              {isFieldError("next_steps") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
           </div>
         );
