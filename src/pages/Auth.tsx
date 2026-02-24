@@ -194,22 +194,6 @@ const Auth = () => {
                     </>
                   )}
 
-                  {userType === "supporter" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Empresa (opcional)</Label>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="company"
-                          type="text"
-                          placeholder="Nome da empresa"
-                          value={company}
-                          onChange={(e) => setCompany(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  )}
                 </>
               )}
 
