@@ -33,7 +33,7 @@ const ChatBot = () => {
     {
       id: "welcome",
       role: "bot",
-      content: "Olá! 👋 Sou o assistente do Instituto Garra. Como posso ajudar você hoje?",
+      content: "Olá! Sou o assistente do Instituto Garra. Como posso ajudar você hoje?",
     },
   ]);
   const [input, setInput] = useState("");

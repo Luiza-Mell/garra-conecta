@@ -123,7 +123,7 @@ const ReviewReports = () => {
     if (!error) {
       await supabase.from("notifications").insert({
         user_id: selectedReport.organization_user_id,
-        title: "Relatório Reprovado ❌",
+        title: "Relatório Reprovado",
         message: `Seu relatório de ${format(new Date(selectedReport.reference_month), "MMMM yyyy", { locale: ptBR })} foi reprovado. Motivo: ${rejectionReason}`,
         type: "rejection",
         related_report_id: selectedReport.id,

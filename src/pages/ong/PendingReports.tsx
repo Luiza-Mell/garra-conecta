@@ -80,7 +80,7 @@ const PendingReports = () => {
           <Card>
             <CardContent className="py-12 text-center">
               <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground mb-4">Nenhum relatório pendente! 🎉</p>
+              <p className="text-muted-foreground mb-4">Nenhum relatório pendente!</p>
               <Button asChild>
                 <Link to="/ong/dashboard">Voltar ao Dashboard</Link>
               </Button>

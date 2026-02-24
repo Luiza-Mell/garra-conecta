@@ -230,7 +230,7 @@ const OngDashboard = () => {
                 <Progress value={Math.min(completionRate, 100)} className="h-3" />
                 <p className="text-xs text-muted-foreground">
                   {completionRate >= 100
-                    ? "✅ Todos os relatórios em dia!"
+                    ? "Todos os relatórios em dia!"
                     : `Faltam ${currentMonth - reportsThisYear.length} relatório(s) para ficar em dia`}
                 </p>
               </div>
