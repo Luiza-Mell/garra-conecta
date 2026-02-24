@@ -85,11 +85,8 @@ const Auth = () => {
         <Card className="shadow-soft border-border">
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-2xl">G</span>
-              </div>
+              <img src={logoGarra} alt="Instituto Garra" className="h-12" />
             </div>
-            <CardTitle className="text-2xl">Instituto Garra</CardTitle>
             <CardDescription>Entre na sua conta para continuar</CardDescription>
           </CardHeader>
 
