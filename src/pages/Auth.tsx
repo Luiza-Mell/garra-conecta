@@ -1,36 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, HandHeart, ArrowLeft, Loader2, Mail, Lock, User, Building, FileText } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Email inválido").max(255);
 const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres").max(72);
 
-type UserType = "organization" | "admin";
-
 const Auth = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, userRole, signIn, signUp, loading } = useAuth();
+  const { user, userRole, signIn, loading } = useAuth();
 
-  const [userType, setUserType] = useState<UserType>("organization");
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Form fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
-  const [cnpj, setCnpj] = useState("");
-  const [company, setCompany] = useState("");
 
   useEffect(() => {
     if (!loading && user && userRole) {
@@ -42,53 +30,32 @@ const Auth = () => {
     }
   }, [user, userRole, loading, navigate]);
 
-  const validateForm = () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     try {
       emailSchema.parse(email);
       passwordSchema.parse(password);
-      return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       }
-      return false;
+      return;
     }
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
     setIsSubmitting(true);
-
     try {
-      if (mode === "login") {
-        const { error } = await signIn(email, password);
-        if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            toast.error("Email ou senha incorretos");
-          } else if (error.message.includes("Email not confirmed")) {
-            toast.error("Por favor, confirme seu email antes de fazer login");
-          } else {
-            toast.error("Erro ao fazer login. Tente novamente.");
-          }
+      const { error } = await signIn(email, password);
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou senha incorretos");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast.error("Por favor, confirme seu email antes de fazer login");
         } else {
-          toast.success("Login realizado com sucesso!");
+          toast.error("Erro ao fazer login. Tente novamente.");
         }
       } else {
-        const additionalData = { name, organizationName, cnpj };
-        const { error } = await signUp(email, password, "organization", additionalData);
-        if (error) {
-          if (error.message.includes("User already registered")) {
-            toast.error("Este email já está cadastrado");
-          } else {
-            toast.error("Erro ao criar conta. Tente novamente.");
-          }
-        } else {
-          toast.success("Conta criada! Verifique seu email para confirmar o cadastro.");
-          setMode("login");
-        }
+        toast.success("Login realizado com sucesso!");
       }
     } finally {
       setIsSubmitting(false);
@@ -106,8 +73,8 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-accent-subtle flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -122,78 +89,11 @@ const Auth = () => {
               </div>
             </div>
             <CardTitle className="text-2xl">Instituto Garra</CardTitle>
-            <CardDescription>
-              {mode === "login" 
-                ? "Entre na sua conta para continuar" 
-                : "Crie sua conta para começar"}
-            </CardDescription>
+            <CardDescription>Entre na sua conta para continuar</CardDescription>
           </CardHeader>
 
           <CardContent>
-            {/* User Type - only ONG signup, admin is pre-created */}
-            {mode === "signup" && (
-              <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/10 text-center">
-                <Building2 className="w-5 h-5 text-primary mx-auto mb-1" />
-                <p className="text-sm font-medium text-foreground">Cadastro de Organização</p>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="space-y-4">
-              {mode === "signup" && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome Completo</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="Seu nome"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {userType === "organization" && (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="organizationName">Nome da Organização</Label>
-                        <div className="relative">
-                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            id="organizationName"
-                            type="text"
-                            placeholder="Nome da ONG"
-                            value={organizationName}
-                            onChange={(e) => setOrganizationName(e.target.value)}
-                            className="pl-10"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cnpj">CNPJ (opcional)</Label>
-                        <div className="relative">
-                          <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            id="cnpj"
-                            type="text"
-                            placeholder="00.000.000/0000-00"
-                            value={cnpj}
-                            onChange={(e) => setCnpj(e.target.value)}
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                </>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
@@ -226,44 +126,16 @@ const Auth = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full"
                 size="lg"
                 disabled={isSubmitting}
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                {mode === "login" ? "Entrar" : "Criar Conta"}
+                Entrar
               </Button>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {mode === "login" ? (
-                  <>
-                    Não tem uma conta?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setMode("signup")}
-                      className="text-primary font-medium hover:underline"
-                    >
-                      Cadastre-se
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    Já tem uma conta?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setMode("login")}
-                      className="text-primary font-medium hover:underline"
-                    >
-                      Faça login
-                    </button>
-                  </>
-                )}
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
