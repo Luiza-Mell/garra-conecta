@@ -13,16 +13,14 @@ import { z } from "zod";
 const emailSchema = z.string().email("Email inválido").max(255);
 const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres").max(72);
 
-type UserType = "organization" | "supporter";
+type UserType = "organization" | "admin";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, userRole, signIn, signUp, loading } = useAuth();
 
-  const [userType, setUserType] = useState<UserType>(
-    (searchParams.get("type") as UserType) || "organization"
-  );
+  const [userType, setUserType] = useState<UserType>("organization");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,8 +36,8 @@ const Auth = () => {
     if (!loading && user && userRole) {
       if (userRole === "organization") {
         navigate("/ong/dashboard");
-      } else if (userRole === "supporter") {
-        navigate("/apoiador/dashboard");
+      } else if (userRole === "admin") {
+        navigate("/admin/dashboard");
       }
     }
   }, [user, userRole, loading, navigate]);
@@ -79,11 +77,8 @@ const Auth = () => {
           toast.success("Login realizado com sucesso!");
         }
       } else {
-        const additionalData = userType === "organization" 
-          ? { name, organizationName, cnpj }
-          : { name, company };
-
-        const { error } = await signUp(email, password, userType, additionalData);
+        const additionalData = { name, organizationName, cnpj };
+        const { error } = await signUp(email, password, "organization", additionalData);
         if (error) {
           if (error.message.includes("User already registered")) {
             toast.error("Este email já está cadastrado");
@@ -135,19 +130,13 @@ const Auth = () => {
           </CardHeader>
 
           <CardContent>
-            {/* User Type Selector */}
-            <Tabs value={userType} onValueChange={(v) => setUserType(v as UserType)} className="mb-6">
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="organization" className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  ONG
-                </TabsTrigger>
-                <TabsTrigger value="supporter" className="flex items-center gap-2">
-                  <HandHeart className="w-4 h-4" />
-                  Apoiador
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {/* User Type - only ONG signup, admin is pre-created */}
+            {mode === "signup" && (
+              <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/10 text-center">
+                <Building2 className="w-5 h-5 text-primary mx-auto mb-1" />
+                <p className="text-sm font-medium text-foreground">Cadastro de Organização</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
@@ -202,22 +191,6 @@ const Auth = () => {
                     </>
                   )}
 
-                  {userType === "supporter" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Empresa (opcional)</Label>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="company"
-                          type="text"
-                          placeholder="Nome da empresa"
-                          value={company}
-                          onChange={(e) => setCompany(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  )}
                 </>
               )}
 
