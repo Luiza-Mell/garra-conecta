@@ -135,7 +135,7 @@ const OngDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Olá, {organization?.name || "Organização"}! 👋
+              Olá, {organization?.name || "Organização"}!
             </h1>
             <p className="text-muted-foreground">
               Acompanhe seus relatórios e indicadores de impacto.
@@ -230,7 +230,7 @@ const OngDashboard = () => {
                 <Progress value={Math.min(completionRate, 100)} className="h-3" />
                 <p className="text-xs text-muted-foreground">
                   {completionRate >= 100
-                    ? "✅ Todos os relatórios em dia!"
+                    ? "Todos os relatórios em dia!"
                     : `Faltam ${currentMonth - reportsThisYear.length} relatório(s) para ficar em dia`}
                 </p>
               </div>

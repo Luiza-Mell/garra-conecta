@@ -77,6 +77,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     },
     { href: "/ong/novo-relatorio", label: "Novo Relatório", icon: PlusCircle },
     { href: "/ong/indicadores", label: "Indicadores", icon: BarChart3 },
+    { href: "/ong/perfil", label: "Editar Perfil", icon: Settings },
   ];
 
   const adminNavItems = [
