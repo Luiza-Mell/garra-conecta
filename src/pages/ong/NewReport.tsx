@@ -374,6 +374,31 @@ const NewReport = () => {
                 rows={3}
               />
             </div>
+
+            {/* Invoice Upload */}
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Receipt className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-foreground">Notas Fiscais</h3>
+              </div>
+              {!savedReportId ? (
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Salve o relatório como rascunho</strong> para poder enviar notas fiscais e outros comprovantes.
+                  </p>
+                </div>
+              ) : (
+                <FileUpload
+                  reportId={savedReportId}
+                  category="notas_fiscais"
+                  label="Enviar Notas Fiscais"
+                  description="Imagens ou PDFs das notas fiscais do período"
+                  accept="image/*,.pdf"
+                  files={invoiceFiles}
+                  onFilesChange={setInvoiceFiles}
+                />
+              )}
+            </div>
           </div>
         );
 
