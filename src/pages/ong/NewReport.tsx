@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import FileUpload from "@/components/FileUpload";
 import {
   Building2,
   FileText,
@@ -25,6 +26,7 @@ import {
   Send,
   Loader2,
   Calendar,
+  Receipt,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
