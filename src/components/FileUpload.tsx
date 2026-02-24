@@ -22,6 +22,7 @@ interface FileUploadProps {
   multiple?: boolean;
   files: UploadedFile[];
   onFilesChange: (files: UploadedFile[]) => void;
+  onEnsureDraft?: () => Promise<string | null>;
 }
 
 const FileUpload = ({
@@ -33,6 +34,7 @@ const FileUpload = ({
   multiple = true,
   files,
   onFilesChange,
+  onEnsureDraft,
 }: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,8 +43,15 @@ const FileUpload = ({
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
 
-    if (!reportId) {
-      toast.error("Salve o relatório como rascunho antes de enviar arquivos.");
+    let currentReportId = reportId;
+
+    // Auto-create draft if needed
+    if (!currentReportId && onEnsureDraft) {
+      currentReportId = await onEnsureDraft();
+    }
+
+    if (!currentReportId) {
+      toast.error("Não foi possível criar o rascunho. Tente novamente.");
       return;
     }
 
@@ -56,7 +65,7 @@ const FileUpload = ({
       }
 
       const ext = file.name.split(".").pop();
-      const path = `${reportId}/${category}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const path = `${currentReportId}/${category}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from("report-files")
@@ -74,7 +83,7 @@ const FileUpload = ({
       const { data: attachmentData, error: dbError } = await supabase
         .from("report_attachments")
         .insert({
-          report_id: reportId,
+          report_id: currentReportId,
           file_name: file.name,
           file_url: urlData.publicUrl,
           file_type: file.type,
@@ -135,7 +144,6 @@ const FileUpload = ({
         </div>
       </div>
 
-      {/* Upload area */}
       <div
         onClick={() => !uploading && inputRef.current?.click()}
         className={cn(
@@ -162,7 +170,6 @@ const FileUpload = ({
         />
       </div>
 
-      {/* File list / preview */}
       {files.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {files.map((file) => (

@@ -41,6 +41,7 @@ const App = () => (
             <Route path="/ong/dashboard" element={<OngDashboard />} />
             <Route path="/ong/relatorios" element={<OngReports />} />
             <Route path="/ong/novo-relatorio" element={<NewReport />} />
+            <Route path="/ong/relatorio/:id" element={<NewReport />} />
             <Route path="/ong/pendentes" element={<PendingReports />} />
             <Route path="/ong/indicadores" element={<Indicators />} />
 
