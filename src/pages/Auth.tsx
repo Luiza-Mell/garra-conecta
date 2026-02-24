@@ -13,7 +13,7 @@ import { z } from "zod";
 const emailSchema = z.string().email("Email inválido").max(255);
 const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres").max(72);
 
-type UserType = "organization" | "supporter";
+type UserType = "organization" | "admin";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
