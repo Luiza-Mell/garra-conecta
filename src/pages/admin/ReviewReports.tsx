@@ -91,7 +91,7 @@ const ReviewReports = () => {
     if (!error) {
       await supabase.from("notifications").insert({
         user_id: report.organization_user_id,
-        title: "Relatório Aprovado ✅",
+        title: "Relatório Aprovado",
         message: `Seu relatório de ${format(new Date(report.reference_month), "MMMM yyyy", { locale: ptBR })} foi aprovado.`,
         type: "success",
         related_report_id: report.id,
