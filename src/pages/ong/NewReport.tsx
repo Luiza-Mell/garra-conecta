@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import FileUpload from "@/components/FileUpload";
 import {
   Building2,
   FileText,
@@ -25,6 +26,7 @@ import {
   Send,
   Loader2,
   Calendar,
+  Receipt,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -47,6 +49,9 @@ const NewReport = () => {
   const [loading, setLoading] = useState(false);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [organizationName, setOrganizationName] = useState("");
+  const [savedReportId, setSavedReportId] = useState<string | null>(null);
+  const [invoiceFiles, setInvoiceFiles] = useState<any[]>([]);
+  const [proofFiles, setProofFiles] = useState<any[]>([]);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -107,7 +112,7 @@ const NewReport = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("monthly_reports").insert({
+      const { data, error } = await supabase.from("monthly_reports").insert({
         organization_id: organizationId,
         reference_month: formData.reference_month + "-01",
         status: "draft",
@@ -137,9 +142,10 @@ const NewReport = () => {
         work_life_balance: formData.work_life_balance || null,
         current_needs: formData.current_needs || null,
         how_garra_can_help: formData.how_garra_can_help || null,
-      });
+      }).select("id").single();
 
       if (error) throw error;
+      if (data) setSavedReportId(data.id);
       toast.success("Rascunho salvo com sucesso!");
       navigate("/ong/relatorios");
     } catch (error) {
@@ -368,6 +374,31 @@ const NewReport = () => {
                 rows={3}
               />
             </div>
+
+            {/* Invoice Upload */}
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Receipt className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-foreground">Notas Fiscais</h3>
+              </div>
+              {!savedReportId ? (
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Salve o relatório como rascunho</strong> para poder enviar notas fiscais e outros comprovantes.
+                  </p>
+                </div>
+              ) : (
+                <FileUpload
+                  reportId={savedReportId}
+                  category="notas_fiscais"
+                  label="Enviar Notas Fiscais"
+                  description="Imagens ou PDFs das notas fiscais do período"
+                  accept="image/*,.pdf"
+                  files={invoiceFiles}
+                  onFilesChange={setInvoiceFiles}
+                />
+              )}
+            </div>
           </div>
         );
 
@@ -465,20 +496,38 @@ const NewReport = () => {
       case 7:
         return (
           <div className="space-y-6">
-            <div className="p-6 border-2 border-dashed border-border rounded-xl text-center">
-              <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-medium text-foreground mb-2">Evidências de Comunicação</h3>
+            {/* Provas de Vida */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Camera className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-foreground">Provas de Vida</h3>
+              </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Fotos, vídeos, relatos e depoimentos podem ser anexados após salvar o relatório.
+                Envie fotos e vídeos que comprovem a execução das atividades, participação dos beneficiários e impacto do projeto.
               </p>
-              <p className="text-xs text-muted-foreground">
-                Formatos aceitos: JPG, PNG, PDF, MP4 (máx. 10MB cada)
-              </p>
+              {!savedReportId ? (
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Salve o relatório como rascunho</strong> para poder enviar fotos e vídeos como provas de vida.
+                  </p>
+                </div>
+              ) : (
+                <FileUpload
+                  reportId={savedReportId}
+                  category="provas_de_vida"
+                  label="Enviar Fotos e Vídeos"
+                  description="Imagens e vídeos das atividades realizadas (máx. 20MB cada)"
+                  accept="image/*,video/*"
+                  files={proofFiles}
+                  onFilesChange={setProofFiles}
+                />
+              )}
             </div>
+
             <div className="bg-accent/50 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">
-                <strong>Nota:</strong> Você poderá anexar arquivos como notas fiscais, recibos, fotos e vídeos 
-                após salvar o relatório como rascunho ou após o envio.
+                <strong>Dica:</strong> Envie fotos de atividades com beneficiários, registros de eventos, 
+                depoimentos em vídeo e qualquer evidência que demonstre o impacto do projeto.
               </p>
             </div>
           </div>
