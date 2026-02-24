@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import logoGarra from "@/assets/logo-instituto-garra.svg";
 
 interface DashboardLayoutProps {
   children: ReactNode;
