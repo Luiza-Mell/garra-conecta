@@ -776,44 +776,60 @@ const NewReport = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="personal_report">Relato Pessoal do(a) Gestor(a)</Label>
+              <Label htmlFor="personal_report">Relato Pessoal do(a) Gestor(a) *</Label>
               <Textarea
                 id="personal_report"
                 placeholder="Compartilhe um relato pessoal sobre o período..."
                 value={formData.personal_report}
                 onChange={(e) => updateFormData("personal_report", e.target.value)}
                 rows={4}
+                className={isFieldError("personal_report") ? "border-destructive" : ""}
               />
+              {isFieldError("personal_report") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="work_life_balance">Equilíbrio entre Vida Pessoal e Profissional</Label>
+              <Label htmlFor="work_life_balance">Equilíbrio entre Vida Pessoal e Profissional *</Label>
               <Textarea
                 id="work_life_balance"
                 placeholder="Como está o equilíbrio entre vida pessoal e trabalho?"
                 value={formData.work_life_balance}
                 onChange={(e) => updateFormData("work_life_balance", e.target.value)}
                 rows={3}
+                className={isFieldError("work_life_balance") ? "border-destructive" : ""}
               />
+              {isFieldError("work_life_balance") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="current_needs">Necessidades Atuais</Label>
+              <Label htmlFor="current_needs">Necessidades Atuais *</Label>
               <Textarea
                 id="current_needs"
                 placeholder="Quais são as necessidades atuais da organização?"
                 value={formData.current_needs}
                 onChange={(e) => updateFormData("current_needs", e.target.value)}
                 rows={3}
+                className={isFieldError("current_needs") ? "border-destructive" : ""}
               />
+              {isFieldError("current_needs") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="how_garra_can_help">Como o Instituto Garra Pode Apoiar</Label>
+              <Label htmlFor="how_garra_can_help">Como o Instituto Garra Pode Apoiar *</Label>
               <Textarea
                 id="how_garra_can_help"
                 placeholder="De que forma o Instituto Garra pode ajudar?"
                 value={formData.how_garra_can_help}
                 onChange={(e) => updateFormData("how_garra_can_help", e.target.value)}
                 rows={3}
+                className={isFieldError("how_garra_can_help") ? "border-destructive" : ""}
               />
+              {isFieldError("how_garra_can_help") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
           </div>
         );
