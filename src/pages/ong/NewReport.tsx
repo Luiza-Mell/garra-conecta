@@ -635,24 +635,32 @@ const NewReport = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="autonomy_strategies">Estratégias para Autonomia Financeira</Label>
+              <Label htmlFor="autonomy_strategies">Estratégias para Autonomia Financeira *</Label>
               <Textarea
                 id="autonomy_strategies"
                 placeholder="Quais estratégias estão sendo implementadas para autonomia?"
                 value={formData.autonomy_strategies}
                 onChange={(e) => updateFormData("autonomy_strategies", e.target.value)}
                 rows={3}
+                className={isFieldError("autonomy_strategies") ? "border-destructive" : ""}
               />
+              {isFieldError("autonomy_strategies") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="revenue_diversification">Diversificação de Fontes de Receita</Label>
+              <Label htmlFor="revenue_diversification">Diversificação de Fontes de Receita *</Label>
               <Textarea
                 id="revenue_diversification"
                 placeholder="Como a organização está diversificando suas fontes de receita?"
                 value={formData.revenue_diversification}
                 onChange={(e) => updateFormData("revenue_diversification", e.target.value)}
                 rows={3}
+                className={isFieldError("revenue_diversification") ? "border-destructive" : ""}
               />
+              {isFieldError("revenue_diversification") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
           </div>
         );
