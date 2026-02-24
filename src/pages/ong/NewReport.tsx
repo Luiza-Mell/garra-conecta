@@ -507,14 +507,18 @@ const NewReport = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="participants_count">Número de Participantes/Beneficiários</Label>
+              <Label htmlFor="participants_count">Número de Participantes/Beneficiários *</Label>
               <Input
                 id="participants_count"
                 type="number"
                 placeholder="Ex: 150"
                 value={formData.participants_count}
                 onChange={(e) => updateFormData("participants_count", e.target.value)}
+                className={isFieldError("participants_count") ? "border-destructive" : ""}
               />
+              {isFieldError("participants_count") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
           </div>
         );
