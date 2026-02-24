@@ -77,11 +77,8 @@ const Auth = () => {
           toast.success("Login realizado com sucesso!");
         }
       } else {
-        const additionalData = userType === "organization" 
-          ? { name, organizationName, cnpj }
-          : { name, company };
-
-        const { error } = await signUp(email, password, userType, additionalData);
+        const additionalData = { name, organizationName, cnpj };
+        const { error } = await signUp(email, password, "organization", additionalData);
         if (error) {
           if (error.message.includes("User already registered")) {
             toast.error("Este email já está cadastrado");

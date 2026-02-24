@@ -86,7 +86,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const navItems = userRole === "organization" ? orgNavItems : adminNavItems;
   const roleLabel = userRole === "organization" ? "Organização" : "Administrador";
-  const isAdmin = userRole === "admin" || userRole === "supporter";
+  const isAdmin = userRole === "admin";
 
   return (
     <div className="min-h-screen bg-background flex">
