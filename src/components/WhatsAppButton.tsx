@@ -1,6 +1,6 @@
 import { MessageSquare } from "lucide-react";
 
-const WHATSAPP_NUMBER = "5511998162471";
+const WHATSAPP_NUMBER = "5511996663443";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Olá! Preciso de ajuda com a plataforma do Instituto Garra.`;
 
 const WhatsAppButton = () => {

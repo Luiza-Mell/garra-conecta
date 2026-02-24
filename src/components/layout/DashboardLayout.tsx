@@ -168,7 +168,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 Suporte
               </p>
               <a
-                href="https://wa.me/5511998162471?text=Olá! Preciso de ajuda com a plataforma do Instituto Garra."
+                href="https://wa.me/5511996663443?text=Olá! Preciso de ajuda com a plataforma do Instituto Garra."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
