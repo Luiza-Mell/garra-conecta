@@ -669,43 +669,59 @@ const NewReport = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="network_activities">Atividades Realizadas em Rede</Label>
+              <Label htmlFor="network_activities">Atividades Realizadas em Rede *</Label>
               <Textarea
                 id="network_activities"
                 placeholder="Quais atividades foram realizadas em parceria com outras organizações?"
                 value={formData.network_activities}
                 onChange={(e) => updateFormData("network_activities", e.target.value)}
                 rows={4}
+                className={isFieldError("network_activities") ? "border-destructive" : ""}
               />
+              {isFieldError("network_activities") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="partnerships">Parcerias Envolvidas</Label>
+              <Label htmlFor="partnerships">Parcerias Envolvidas *</Label>
               <Textarea
                 id="partnerships"
                 placeholder="Quais parcerias foram estabelecidas ou fortalecidas?"
                 value={formData.partnerships}
                 onChange={(e) => updateFormData("partnerships", e.target.value)}
                 rows={3}
+                className={isFieldError("partnerships") ? "border-destructive" : ""}
               />
+              {isFieldError("partnerships") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="partner_locations">Locais e Organizações Parceiras</Label>
+              <Label htmlFor="partner_locations">Locais e Organizações Parceiras *</Label>
               <Textarea
                 id="partner_locations"
                 placeholder="Liste os locais e organizações parceiras..."
                 value={formData.partner_locations}
                 onChange={(e) => updateFormData("partner_locations", e.target.value)}
                 rows={3}
+                className={isFieldError("partner_locations") ? "border-destructive" : ""}
               />
+              {isFieldError("partner_locations") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="action_type">Tipo de Ação Desenvolvida</Label>
+              <Label htmlFor="action_type">Tipo de Ação Desenvolvida *</Label>
               <Input
                 id="action_type"
                 placeholder="Ex: Capacitação, Evento, Workshop..."
                 value={formData.action_type}
                 onChange={(e) => updateFormData("action_type", e.target.value)}
+                className={isFieldError("action_type") ? "border-destructive" : ""}
               />
+              {isFieldError("action_type") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
           </div>
         );
