@@ -20,9 +20,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, userRole, signIn, signUp, loading } = useAuth();
 
-  const [userType, setUserType] = useState<UserType>(
-    (searchParams.get("type") as UserType) || "organization"
-  );
+  const [userType, setUserType] = useState<UserType>("organization");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
