@@ -541,33 +541,47 @@ const NewReport = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cash_flow">Fluxo de Caixa</Label>
+              <Label htmlFor="cash_flow">Fluxo de Caixa *</Label>
               <Textarea
                 id="cash_flow"
                 placeholder="Descreva o fluxo de caixa do período..."
                 value={formData.cash_flow}
                 onChange={(e) => updateFormData("cash_flow", e.target.value)}
                 rows={3}
+                className={isFieldError("cash_flow") ? "border-destructive" : ""}
               />
+              {isFieldError("cash_flow") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="financial_management_model">Modelo de Gestão Financeira</Label>
+              <Label htmlFor="financial_management_model">Modelo de Gestão Financeira *</Label>
               <Textarea
                 id="financial_management_model"
                 placeholder="Como é feita a gestão financeira do projeto?"
                 value={formData.financial_management_model}
                 onChange={(e) => updateFormData("financial_management_model", e.target.value)}
                 rows={3}
+                className={isFieldError("financial_management_model") ? "border-destructive" : ""}
               />
+              {isFieldError("financial_management_model") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="other_resources">Outras Fontes de Recursos</Label>
+              <Label htmlFor="other_resources">Outras Fontes de Recursos *</Label>
               <Textarea
                 id="other_resources"
                 placeholder="O projeto possui outras fontes de financiamento?"
                 value={formData.other_resources}
                 onChange={(e) => updateFormData("other_resources", e.target.value)}
                 rows={3}
+                className={isFieldError("other_resources") ? "border-destructive" : ""}
+              />
+              {isFieldError("other_resources") && (
+                <p className="text-xs text-destructive">Campo obrigatório</p>
+              )}
+            </div>
               />
             </div>
 
