@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Heart, Users, FileText, TrendingUp, Building2, HandHeart } from "lucide-react";
 import heroImage from "@/assets/hero-illustration.png";
+import logoGarra from "@/assets/logo-instituto-garra.svg";
 
 const Index = () => {
   return (
