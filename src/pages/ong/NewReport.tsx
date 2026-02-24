@@ -582,8 +582,6 @@ const NewReport = () => {
                 <p className="text-xs text-destructive">Campo obrigatório</p>
               )}
             </div>
-              />
-            </div>
 
             {/* Invoice Upload */}
             <div className="border-t border-border pt-4">
