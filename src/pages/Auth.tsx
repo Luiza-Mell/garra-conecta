@@ -133,19 +133,13 @@ const Auth = () => {
           </CardHeader>
 
           <CardContent>
-            {/* User Type Selector */}
-            <Tabs value={userType} onValueChange={(v) => setUserType(v as UserType)} className="mb-6">
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="organization" className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  ONG
-                </TabsTrigger>
-                <TabsTrigger value="supporter" className="flex items-center gap-2">
-                  <HandHeart className="w-4 h-4" />
-                  Apoiador
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {/* User Type - only ONG signup, admin is pre-created */}
+            {mode === "signup" && (
+              <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/10 text-center">
+                <Building2 className="w-5 h-5 text-primary mx-auto mb-1" />
+                <p className="text-sm font-medium text-foreground">Cadastro de Organização</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
