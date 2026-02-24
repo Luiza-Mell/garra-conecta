@@ -17,6 +17,7 @@ import OngReports from "./pages/ong/Reports";
 import NewReport from "./pages/ong/NewReport";
 import PendingReports from "./pages/ong/PendingReports";
 import Indicators from "./pages/ong/Indicators";
+import OngProfile from "./pages/ong/Profile";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
