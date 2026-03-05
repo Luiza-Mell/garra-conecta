@@ -18,11 +18,13 @@ import NewReport from "./pages/ong/NewReport";
 import PendingReports from "./pages/ong/PendingReports";
 import Indicators from "./pages/ong/Indicators";
 import OngProfile from "./pages/ong/Profile";
+import OngRegistration from "./pages/ong/Registration";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import ReviewReports from "./pages/admin/ReviewReports";
 import AdminOrganizations from "./pages/admin/Organizations";
+import AdminOrganizationDetail from "./pages/admin/OrganizationDetail";
 
 const queryClient = new QueryClient();
 
