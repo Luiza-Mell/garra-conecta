@@ -41,6 +41,7 @@ interface ReportForReview {
   submitted_at: string | null;
   organization_name: string;
   organization_user_id: string;
+  [key: string]: any;
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
