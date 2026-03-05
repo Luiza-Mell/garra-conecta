@@ -52,6 +52,7 @@ const statusConfig: Record<string, { label: string; className: string; icon: typ
 
 const OngDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [allReports, setAllReports] = useState<Report[]>([]);
@@ -66,9 +67,15 @@ const OngDashboard = () => {
 
       const { data: orgData } = await supabase
         .from("organizations")
-        .select("id, name")
+        .select("id, name, registration_completed")
         .eq("user_id", user.id)
         .maybeSingle();
+
+      // Redirect to registration if not completed
+      if (orgData && !(orgData as any).registration_completed) {
+        navigate("/ong/cadastro");
+        return;
+      }
 
       if (orgData) {
         setOrganization(orgData);
