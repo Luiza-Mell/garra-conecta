@@ -67,7 +67,7 @@ const ReviewReports = () => {
     if (!user) return;
     const { data } = await supabase
       .from("monthly_reports")
-      .select(`id, reference_month, status, participants_count, activities_description, results_achieved, challenges, submitted_at, organizations (name, user_id)`)
+      .select(`*, organizations (name, user_id)`)
       .order("submitted_at", { ascending: false });
 
     if (data) {
