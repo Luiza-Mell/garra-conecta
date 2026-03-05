@@ -241,30 +241,56 @@ const ReviewReports = () => {
         </Card>
       </div>
 
-      {/* Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Detalhes do Relatório</DialogTitle>
             <DialogDescription>{selectedReport?.organization_name} — {selectedReport && format(new Date(selectedReport.reference_month), "MMMM yyyy", { locale: ptBR })}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 text-sm">
-            <div>
-              <p className="font-medium text-foreground mb-1">Atividades</p>
-              <p className="text-muted-foreground">{selectedReport?.activities_description || "Não informado"}</p>
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">Resultados Alcançados</p>
-              <p className="text-muted-foreground">{selectedReport?.results_achieved || "Não informado"}</p>
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">Desafios</p>
-              <p className="text-muted-foreground">{selectedReport?.challenges || "Não informado"}</p>
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">Beneficiários</p>
-              <p className="text-muted-foreground">{selectedReport?.participants_count || "Não informado"}</p>
-            </div>
+            {[
+              { key: "responsible_person", label: "Responsável" },
+              { key: "form_filled_by", label: "Preenchido por" },
+              { key: "activities_description", label: "Atividades e Projetos" },
+              { key: "project_description", label: "Descrição do Projeto" },
+              { key: "challenges", label: "Desafios" },
+              { key: "advances", label: "Avanços" },
+              { key: "next_steps", label: "Próximos Passos" },
+              { key: "activities_detailed", label: "Atividades Detalhadas" },
+              { key: "participants_count", label: "Beneficiários" },
+              { key: "funds_usage", label: "Utilização do Valor" },
+              { key: "cash_flow", label: "Fluxo de Caixa" },
+              { key: "financial_management_model", label: "Modelo de Gestão Financeira" },
+              { key: "other_resources", label: "Outras Fontes de Recursos" },
+              { key: "results_achieved", label: "Resultados Alcançados" },
+              { key: "impact_generated", label: "Impacto Gerado" },
+              { key: "autonomy_strategies", label: "Estratégias de Autonomia" },
+              { key: "revenue_diversification", label: "Diversificação de Receita" },
+              { key: "network_activities", label: "Atividades em Rede" },
+              { key: "partnerships", label: "Parcerias" },
+              { key: "partner_locations", label: "Locais Parceiros" },
+              { key: "action_type", label: "Tipo de Ação" },
+              { key: "learnings", label: "Aprendizados" },
+              { key: "personal_report", label: "Relato Pessoal" },
+              { key: "work_life_balance", label: "Equilíbrio Vida/Trabalho" },
+              { key: "current_needs", label: "Necessidades Atuais" },
+              { key: "how_garra_can_help", label: "Como o Garra Pode Ajudar" },
+            ].map(({ key, label }) => {
+              const value = selectedReport?.[key];
+              if (!value && value !== 0) return null;
+              return (
+                <div key={key}>
+                  <p className="font-medium text-foreground mb-0.5">{label}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{value}</p>
+                </div>
+              );
+            })}
+            {selectedReport?.rejection_reason && (
+              <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                <p className="font-medium text-destructive mb-0.5">Motivo da Reprovação</p>
+                <p className="text-sm text-muted-foreground">{selectedReport.rejection_reason}</p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
