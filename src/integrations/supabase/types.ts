@@ -175,39 +175,93 @@ export type Database = {
       organizations: {
         Row: {
           address: string | null
+          annual_revenue: string | null
+          areas_of_action: string[] | null
+          cep: string | null
+          city: string | null
           cnpj: string | null
+          constitution_date: string | null
           created_at: string
           description: string | null
+          fantasy_name: string | null
           id: string
+          institutional_email: string | null
+          legal_rep_education: string | null
+          legal_rep_email: string | null
+          legal_rep_gender: string | null
+          legal_rep_name: string | null
+          legal_rep_phone: string | null
+          legal_rep_race: string | null
           logo_url: string | null
           name: string
+          organization_nature: string | null
           phone: string | null
+          registration_completed: boolean
+          social_media: string | null
+          state: string | null
+          team_structure: string[] | null
           updated_at: string
           user_id: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          annual_revenue?: string | null
+          areas_of_action?: string[] | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
+          constitution_date?: string | null
           created_at?: string
           description?: string | null
+          fantasy_name?: string | null
           id?: string
+          institutional_email?: string | null
+          legal_rep_education?: string | null
+          legal_rep_email?: string | null
+          legal_rep_gender?: string | null
+          legal_rep_name?: string | null
+          legal_rep_phone?: string | null
+          legal_rep_race?: string | null
           logo_url?: string | null
           name: string
+          organization_nature?: string | null
           phone?: string | null
+          registration_completed?: boolean
+          social_media?: string | null
+          state?: string | null
+          team_structure?: string[] | null
           updated_at?: string
           user_id: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          annual_revenue?: string | null
+          areas_of_action?: string[] | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
+          constitution_date?: string | null
           created_at?: string
           description?: string | null
+          fantasy_name?: string | null
           id?: string
+          institutional_email?: string | null
+          legal_rep_education?: string | null
+          legal_rep_email?: string | null
+          legal_rep_gender?: string | null
+          legal_rep_name?: string | null
+          legal_rep_phone?: string | null
+          legal_rep_race?: string | null
           logo_url?: string | null
           name?: string
+          organization_nature?: string | null
           phone?: string | null
+          registration_completed?: boolean
+          social_media?: string | null
+          state?: string | null
+          team_structure?: string[] | null
           updated_at?: string
           user_id?: string
           website?: string | null
