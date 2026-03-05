@@ -41,6 +41,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
 
             {/* ONG Routes */}
+            <Route path="/ong/cadastro" element={<OngRegistration />} />
             <Route path="/ong/dashboard" element={<OngDashboard />} />
             <Route path="/ong/relatorios" element={<OngReports />} />
             <Route path="/ong/novo-relatorio" element={<NewReport />} />
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/revisao" element={<ReviewReports />} />
             <Route path="/admin/organizacoes" element={<AdminOrganizations />} />
+            <Route path="/admin/organizacao/:id" element={<AdminOrganizationDetail />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
