@@ -86,8 +86,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { href: "/admin/organizacoes", label: "Organizações", icon: Building2 },
   ];
 
-  const navItems = userRole === "organization" ? orgNavItems : adminNavItems;
-  const roleLabel = userRole === "organization" ? "Organização" : "Administrador";
+  const supporterNavItems = [
+    { href: "/apoiador/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  ];
+
+  const navItems = userRole === "organization" ? orgNavItems : userRole === "supporter" ? supporterNavItems : adminNavItems;
+  const roleLabel = userRole === "organization" ? "Organização" : userRole === "supporter" ? "Apoiador" : "Administrador";
   const isAdmin = userRole === "admin";
 
   return (
