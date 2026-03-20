@@ -831,6 +831,16 @@ const NewReport = () => {
                 <p className="text-xs text-destructive">Campo obrigatório</p>
               )}
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="trail_completed">Qual trilha você já fez?</Label>
+              <Input
+                id="trail_completed"
+                placeholder="Ex: Trilha de Gestão, Trilha Financeira..."
+                value={formData.trail_completed}
+                onChange={(e) => updateFormData("trail_completed", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Campo opcional</p>
+            </div>
           </div>
         );
 
