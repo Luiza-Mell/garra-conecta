@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import logoGarra from "@/assets/logo-instituto-garra.svg";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && user && userRole) {
@@ -64,6 +66,26 @@ const Auth = () => {
       setIsSubmitting(false);
     }
   };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Digite seu email para redefinir a senha.");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Email de redefinição enviado! Verifique sua caixa de entrada.");
+    } catch {
+      toast.error("Erro ao enviar email de redefinição.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -132,9 +154,19 @@ const Auth = () => {
                 size="lg"
                 disabled={isSubmitting}
               >
-                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                 Entrar
               </Button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
             </form>
           </CardContent>
         </Card>

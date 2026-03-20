@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, Camera, Loader2, Save, User } from "lucide-react";
+import { Building2, Camera, Key, Loader2, Save, User } from "lucide-react";
 import { toast } from "sonner";
 
 const OngProfile = () => {
@@ -16,6 +16,10 @@ const OngProfile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const [profileData, setProfileData] = useState({
     full_name: "",
