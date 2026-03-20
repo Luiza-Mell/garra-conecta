@@ -67,6 +67,25 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Digite seu email para redefinir a senha.");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Email de redefinição enviado! Verifique sua caixa de entrada.");
+    } catch {
+      toast.error("Erro ao enviar email de redefinição.");
+    } finally {
+      setForgotLoading(false);
+    }
+  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
