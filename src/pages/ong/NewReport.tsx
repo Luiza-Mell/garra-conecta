@@ -181,6 +181,7 @@ const NewReport = () => {
         work_life_balance: data.work_life_balance || "",
         current_needs: data.current_needs || "",
         how_garra_can_help: data.how_garra_can_help || "",
+        trail_completed: (data as any).trail_completed || "",
       });
 
       // Load attachments
