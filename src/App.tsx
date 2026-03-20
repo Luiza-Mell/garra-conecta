@@ -43,6 +43,7 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* ONG Routes */}
             <Route path="/ong/cadastro" element={<OngRegistration />} />
