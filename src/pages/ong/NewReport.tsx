@@ -116,6 +116,7 @@ const NewReport = () => {
     work_life_balance: "",
     current_needs: "",
     how_garra_can_help: "",
+    trail_completed: "",
   });
 
   // Fetch organization
