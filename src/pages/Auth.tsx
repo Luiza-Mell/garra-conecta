@@ -84,7 +84,8 @@ const Auth = () => {
     } finally {
       setForgotLoading(false);
     }
-  
+  };
+
 
   if (loading) {
     return (
