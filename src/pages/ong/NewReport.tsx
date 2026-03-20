@@ -235,7 +235,8 @@ const NewReport = () => {
     work_life_balance: formData.work_life_balance || null,
     current_needs: formData.current_needs || null,
     how_garra_can_help: formData.how_garra_can_help || null,
-  });
+    trail_completed: formData.trail_completed || null,
+  } as any);
 
   // Auto-create draft so file uploads work immediately
   const ensureDraftExists = async (): Promise<string | null> => {
