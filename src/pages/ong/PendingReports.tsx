@@ -41,7 +41,7 @@ const PendingReports = () => {
           .from("monthly_reports")
           .select("id, reference_month, status, created_at, updated_at")
           .eq("organization_id", orgData.id)
-          .in("status", ["draft", "pending", "rejected"])
+          .in("status", ["draft", "submitted", "rejected"])
           .order("reference_month", { ascending: false });
 
         if (data) setReports(data);
