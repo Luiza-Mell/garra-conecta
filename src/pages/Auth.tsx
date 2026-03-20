@@ -132,9 +132,19 @@ const Auth = () => {
                 size="lg"
                 disabled={isSubmitting}
               >
-                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                 Entrar
               </Button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
             </form>
           </CardContent>
         </Card>
