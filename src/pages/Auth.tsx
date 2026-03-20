@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import logoGarra from "@/assets/logo-instituto-garra.svg";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
