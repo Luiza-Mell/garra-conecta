@@ -1,0 +1,1 @@
+ALTER TABLE public.monthly_reports ADD COLUMN IF NOT EXISTS trail_completed text;
