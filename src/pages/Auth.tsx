@@ -27,6 +27,8 @@ const Auth = () => {
         navigate("/ong/dashboard");
       } else if (userRole === "admin") {
         navigate("/admin/dashboard");
+      } else if (userRole === "supporter") {
+        navigate("/apoiador/dashboard");
       }
     }
   }, [user, userRole, loading, navigate]);

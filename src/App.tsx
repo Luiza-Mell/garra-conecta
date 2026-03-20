@@ -26,6 +26,9 @@ import ReviewReports from "./pages/admin/ReviewReports";
 import AdminOrganizations from "./pages/admin/Organizations";
 import AdminOrganizationDetail from "./pages/admin/OrganizationDetail";
 
+// Supporter Pages
+import SupporterDashboard from "./pages/supporter/Dashboard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -55,6 +58,9 @@ const App = () => (
             <Route path="/admin/revisao" element={<ReviewReports />} />
             <Route path="/admin/organizacoes" element={<AdminOrganizations />} />
             <Route path="/admin/organizacao/:id" element={<AdminOrganizationDetail />} />
+
+            {/* Supporter Routes */}
+            <Route path="/apoiador/dashboard" element={<SupporterDashboard />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />

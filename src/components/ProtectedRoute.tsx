@@ -25,10 +25,11 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   }
 
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
-    // Redirect to appropriate dashboard based on role
     if (userRole === "organization") {
       return <Navigate to="/ong/dashboard" replace />;
-    } else if (userRole === "supporter" || userRole === "admin") {
+    } else if (userRole === "supporter") {
+      return <Navigate to="/apoiador/dashboard" replace />;
+    } else if (userRole === "admin") {
       return <Navigate to="/admin/dashboard" replace />;
     }
     return <Navigate to="/" replace />;

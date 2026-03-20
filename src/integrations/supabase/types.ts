@@ -50,6 +50,7 @@ export type Database = {
           reviewed_by: string | null
           status: string
           submitted_at: string | null
+          trail_completed: string | null
           updated_at: string
           work_life_balance: string | null
         }
@@ -88,6 +89,7 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
           submitted_at?: string | null
+          trail_completed?: string | null
           updated_at?: string
           work_life_balance?: string | null
         }
@@ -126,6 +128,7 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
           submitted_at?: string | null
+          trail_completed?: string | null
           updated_at?: string
           work_life_balance?: string | null
         }

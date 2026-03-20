@@ -41,7 +41,7 @@ const PendingReports = () => {
           .from("monthly_reports")
           .select("id, reference_month, status, created_at, updated_at")
           .eq("organization_id", orgData.id)
-          .in("status", ["draft", "pending", "rejected"])
+          .in("status", ["draft", "submitted", "rejected"])
           .order("reference_month", { ascending: false });
 
         if (data) setReports(data);
@@ -106,8 +106,8 @@ const PendingReports = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge className={report.status === "draft" ? "status-draft" : report.status === "rejected" ? "status-rejected" : "status-pending"}>
-                        {report.status === "draft" ? "Rascunho" : report.status === "rejected" ? "Rejeitado" : "Pendente"}
+                      <Badge className={report.status === "draft" ? "status-draft" : report.status === "rejected" ? "status-rejected" : "status-submitted"}>
+                        {report.status === "draft" ? "Rascunho" : report.status === "rejected" ? "Rejeitado" : "Enviado"}
                       </Badge>
                       <Button variant="outline" size="sm" asChild>
                         <Link to={`/ong/relatorio/${report.id}`}>

@@ -116,6 +116,7 @@ const NewReport = () => {
     work_life_balance: "",
     current_needs: "",
     how_garra_can_help: "",
+    trail_completed: "",
   });
 
   // Fetch organization
@@ -180,6 +181,7 @@ const NewReport = () => {
         work_life_balance: data.work_life_balance || "",
         current_needs: data.current_needs || "",
         how_garra_can_help: data.how_garra_can_help || "",
+        trail_completed: (data as any).trail_completed || "",
       });
 
       // Load attachments
@@ -233,7 +235,8 @@ const NewReport = () => {
     work_life_balance: formData.work_life_balance || null,
     current_needs: formData.current_needs || null,
     how_garra_can_help: formData.how_garra_can_help || null,
-  });
+    trail_completed: formData.trail_completed || null,
+  } as any);
 
   // Auto-create draft so file uploads work immediately
   const ensureDraftExists = async (): Promise<string | null> => {
@@ -830,6 +833,16 @@ const NewReport = () => {
               {isFieldError("how_garra_can_help") && (
                 <p className="text-xs text-destructive">Campo obrigatório</p>
               )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="trail_completed">Qual trilha você já fez?</Label>
+              <Input
+                id="trail_completed"
+                placeholder="Ex: Trilha de Gestão, Trilha Financeira..."
+                value={formData.trail_completed}
+                onChange={(e) => updateFormData("trail_completed", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Campo opcional</p>
             </div>
           </div>
         );
