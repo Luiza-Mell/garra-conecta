@@ -12,18 +12,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import {
-  Building2,
-  User,
-  Users,
-  DollarSign,
-  Target,
-  ArrowLeft,
-  ArrowRight,
-  Send,
-  Loader2,
-  MapPin,
-  Phone,
-  GraduationCap,
+  Building2, User, DollarSign, Target, ArrowLeft, ArrowRight, Send,
+  Loader2, MapPin, Award, Globe, Compass,
 } from "lucide-react";
 
 const steps = [
@@ -32,17 +22,18 @@ const steps = [
   { id: 3, title: "Representante Legal", icon: User },
   { id: 4, title: "Equipe e Receita", icon: DollarSign },
   { id: 5, title: "Áreas de Atuação", icon: Target },
+  { id: 6, title: "Categoria e Eixo", icon: Award },
+  { id: 7, title: "ODS e Alcance", icon: Globe },
 ];
 
 const ORGANIZATION_NATURES = [
-  "Organização da Sociedade Civil (formalizada)",
-  "Coletivo ou projeto social (não formalizado juridicamente)",
-  "Movimento social",
+  "Organização da Sociedade Civil (Formalizada)",
+  "Coletivo ou Projeto Social (não formalizado juridicamente)",
+  "Movimento Social",
   "Outros",
 ];
 
-const GENDERS = ["Feminino", "Masculino", "Não binário", "Outros", "Prefiro não declarar"];
-
+const GENDERS = ["Feminino", "Masculino", "Não binário", "Outro", "Prefiro não declarar"];
 const RACES = ["Branca", "Preta", "Parda", "Amarela", "Indígena", "Prefiro não declarar"];
 
 const EDUCATION_LEVELS = [
@@ -57,24 +48,58 @@ const EDUCATION_LEVELS = [
 
 const TEAM_OPTIONS = [
   "Colaboradores CLT",
-  "Colaboradores PJ / MEI / autônomos",
+  "Colaboradores PJ, MEI ou autônomos",
   "Voluntários",
-  "Outros",
+  "Outro",
 ];
 
 const REVENUE_OPTIONS = [
-  "Zero", "Até R$ 50.000", "R$ 51.000 a R$ 100.000",
-  "R$ 101.000 a R$ 300.000", "R$ 301.000 a R$ 500.000",
-  "R$ 501.000 a R$ 1.000.000", "R$ 1.001.000 a R$ 2.000.000",
-  "R$ 2.000.000 a R$ 5.000.000", "Acima de R$ 5.000.000",
+  "Zero",
+  "Até R$ 50.000,00",
+  "Entre R$ 51.000,00 a R$ 100.000,00",
+  "Entre R$ 101.000,00 a R$ 300.000,00",
+  "Entre R$ 301.000,00 a R$ 500.000,00",
+  "Entre R$ 501.000,00 a R$ 1.000.000,00",
+  "Entre R$ 1.001.000,00 a R$ 2.000.000,00",
+  "Entre R$ 2.000.000,00 a R$ 5.000.000,00",
+  "Acima de R$ 5.000.000,00",
 ];
 
 const AREAS_OF_ACTION = [
   "Alimentação", "Assistência Social", "Cidadania e Defesa dos Direitos Humanos",
   "Ciência e Tecnologia", "Cultura e Artes", "Direito das Mulheres",
   "Educação", "Esportes", "Infraestrutura e Saneamento",
-  "Meio Ambiente", "Primeira Infância", "Proteção Animal",
-  "Saúde", "Violência", "Empreendedorismo", "Outros",
+  "Meio Ambiente", "Primeira Infância", "Empreendedorismo",
+  "Saúde", "Violência", "Proteção Animal",
+];
+
+const PROGRAM_CATEGORIES = [
+  "Garra Semente (Inicial)",
+  "Garra School (Consolidação)",
+  "Garra Ventures (Crescimento)",
+  "Garra Lab (Escala)",
+];
+
+const PROJECT_AXES = [
+  "Educação e Protagonismo Jovem",
+  "Projetos de Educação Complementar",
+  "Projetos de Fortalecimento de Renda",
+];
+
+const ODS_OPTIONS = [
+  "ODS 1 - Erradicação da Pobreza",
+  "ODS 2 - Fome Zero e Agricultura Sustentável",
+  "ODS 3 - Saúde e Bem-Estar",
+  "ODS 4 - Educação de Qualidade",
+  "ODS 5 - Igualdade de Gênero",
+  "ODS 8 - Trabalho Decente e Crescimento Econômico",
+  "ODS 10 - Redução das Desigualdades",
+  "ODS 16 - Paz, Justiça e Instituições Eficazes",
+  "ODS 17 - Parcerias e Meios de Implantação",
+];
+
+const MUNICIPALITIES_OPTIONS = [
+  "1", "2", "3", "4", "5", "Entre 6 a 10", "Acima de 10",
 ];
 
 const OngRegistration = () => {
@@ -85,7 +110,7 @@ const OngRegistration = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    name: "", // Razão Social
+    name: "",
     fantasy_name: "",
     organization_nature: "",
     cnpj: "",
@@ -107,6 +132,10 @@ const OngRegistration = () => {
     team_structure: [] as string[],
     annual_revenue: "",
     areas_of_action: [] as string[],
+    program_category: "",
+    project_axis: "",
+    ods: [] as string[],
+    municipalities_count: "",
   });
 
   useEffect(() => {
@@ -119,26 +148,18 @@ const OngRegistration = () => {
         .maybeSingle();
       if (data) {
         setOrgId(data.id);
-        setForm(prev => ({
-          ...prev,
-          name: data.name || "",
-          cnpj: data.cnpj || "",
-        }));
+        setForm(prev => ({ ...prev, name: data.name || "", cnpj: data.cnpj || "" }));
       }
     };
     fetchOrg();
   }, [user]);
 
-  const update = (field: string, value: any) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  };
+  const update = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const toggleArray = (field: "team_structure" | "areas_of_action", value: string, maxItems?: number) => {
+  const toggleArray = (field: "team_structure" | "areas_of_action" | "ods", value: string, maxItems?: number) => {
     setForm(prev => {
       const arr = prev[field];
-      if (arr.includes(value)) {
-        return { ...prev, [field]: arr.filter(v => v !== value) };
-      }
+      if (arr.includes(value)) return { ...prev, [field]: arr.filter(v => v !== value) };
       if (maxItems && arr.length >= maxItems) {
         toast.error(`Selecione no máximo ${maxItems} opções.`);
         return prev;
@@ -175,6 +196,14 @@ const OngRegistration = () => {
         return true;
       case 5:
         if (form.areas_of_action.length === 0) { toast.error("Selecione ao menos uma área de atuação."); return false; }
+        return true;
+      case 6:
+        if (!form.program_category) { toast.error("Selecione a categoria do programa."); return false; }
+        if (!form.project_axis) { toast.error("Selecione o eixo do projeto."); return false; }
+        return true;
+      case 7:
+        if (form.ods.length === 0) { toast.error("Selecione ao menos uma ODS."); return false; }
+        if (!form.municipalities_count) { toast.error("Selecione a quantidade de municípios."); return false; }
         return true;
       default:
         return true;
@@ -214,6 +243,10 @@ const OngRegistration = () => {
           team_structure: form.team_structure,
           annual_revenue: form.annual_revenue,
           areas_of_action: form.areas_of_action,
+          program_category: form.program_category,
+          project_axis: form.project_axis,
+          ods: form.ods,
+          municipalities_count: form.municipalities_count,
           registration_completed: true,
         } as any)
         .eq("id", orgId);
@@ -371,20 +404,16 @@ const OngRegistration = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-3">
-              <Label>Estrutura da Equipe * (pode selecionar mais de uma)</Label>
+              <Label>Como é constituída a equipe para a realização das atividades da organização? * (pode selecionar mais de uma)</Label>
               {TEAM_OPTIONS.map(t => (
                 <div key={t} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`team-${t}`}
-                    checked={form.team_structure.includes(t)}
-                    onCheckedChange={() => toggleArray("team_structure", t)}
-                  />
+                  <Checkbox id={`team-${t}`} checked={form.team_structure.includes(t)} onCheckedChange={() => toggleArray("team_structure", t)} />
                   <Label htmlFor={`team-${t}`} className="font-normal cursor-pointer">{t}</Label>
                 </div>
               ))}
             </div>
             <div className="space-y-3">
-              <Label>Receita da Organização em 2025 *</Label>
+              <Label>Qual foi a receita da organização proponente em 2025? *</Label>
               <RadioGroup value={form.annual_revenue} onValueChange={v => update("annual_revenue", v)}>
                 {REVENUE_OPTIONS.map(r => (
                   <div key={r} className="flex items-center space-x-2">
@@ -401,19 +430,71 @@ const OngRegistration = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-3">
-              <Label>Áreas de Atuação * (selecione até 3)</Label>
+              <Label>Qual ou quais são as suas principais áreas de atuação da organização? * (selecione até 3)</Label>
               <div className="grid md:grid-cols-2 gap-2">
                 {AREAS_OF_ACTION.map(a => (
                   <div key={a} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`area-${a}`}
-                      checked={form.areas_of_action.includes(a)}
-                      onCheckedChange={() => toggleArray("areas_of_action", a, 3)}
-                    />
+                    <Checkbox id={`area-${a}`} checked={form.areas_of_action.includes(a)} onCheckedChange={() => toggleArray("areas_of_action", a, 3)} />
                     <Label htmlFor={`area-${a}`} className="font-normal cursor-pointer text-sm">{a}</Label>
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        );
+
+      case 6:
+        return (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label>Qual é a categoria que a sua organização está participando? *</Label>
+              <RadioGroup value={form.program_category} onValueChange={v => update("program_category", v)}>
+                {PROGRAM_CATEGORIES.map(c => (
+                  <div key={c} className="flex items-center space-x-2">
+                    <RadioGroupItem value={c} id={`cat-${c}`} />
+                    <Label htmlFor={`cat-${c}`} className="font-normal cursor-pointer">{c}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+            <div className="space-y-3">
+              <Label>Qual é o eixo principal com o qual a iniciativa do seu projeto mais se enquadra? *</Label>
+              <RadioGroup value={form.project_axis} onValueChange={v => update("project_axis", v)}>
+                {PROJECT_AXES.map(a => (
+                  <div key={a} className="flex items-center space-x-2">
+                    <RadioGroupItem value={a} id={`axis-${a}`} />
+                    <Label htmlFor={`axis-${a}`} className="font-normal cursor-pointer">{a}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </div>
+        );
+
+      case 7:
+        return (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label>Marque até 03 ODS alinhadas com o seu projeto * (máximo 3)</Label>
+              <div className="space-y-2">
+                {ODS_OPTIONS.map(o => (
+                  <div key={o} className="flex items-center space-x-2">
+                    <Checkbox id={`ods-${o}`} checked={form.ods.includes(o)} onCheckedChange={() => toggleArray("ods", o, 3)} />
+                    <Label htmlFor={`ods-${o}`} className="font-normal cursor-pointer text-sm">{o}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <Label>Quantos municípios seu projeto pretende atender? *</Label>
+              <RadioGroup value={form.municipalities_count} onValueChange={v => update("municipalities_count", v)}>
+                {MUNICIPALITIES_OPTIONS.map(m => (
+                  <div key={m} className="flex items-center space-x-2">
+                    <RadioGroupItem value={m} id={`mun-${m}`} />
+                    <Label htmlFor={`mun-${m}`} className="font-normal cursor-pointer">{m}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
           </div>
         );
@@ -426,7 +507,6 @@ const OngRegistration = () => {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto space-y-6">
-        {/* Welcome message */}
         {currentStep === 1 && (
           <Card className="border-primary/20 bg-accent/30">
             <CardContent className="pt-6">
@@ -442,7 +522,6 @@ const OngRegistration = () => {
           </Card>
         )}
 
-        {/* Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Etapa {currentStep} de {steps.length}</span>
@@ -451,7 +530,6 @@ const OngRegistration = () => {
           <Progress value={progress} className="h-2" />
         </div>
 
-        {/* Step indicators */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           {steps.map(step => {
             const isActive = currentStep === step.id;
@@ -473,7 +551,6 @@ const OngRegistration = () => {
           })}
         </div>
 
-        {/* Form */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -485,21 +562,12 @@ const OngRegistration = () => {
           <CardContent>{renderStep()}</CardContent>
         </Card>
 
-        {/* Navigation */}
         <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Anterior
+          <Button variant="outline" onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))} disabled={currentStep === 1}>
+            <ArrowLeft className="w-4 h-4 mr-2" /> Anterior
           </Button>
           {currentStep < steps.length ? (
-            <Button onClick={handleNext}>
-              Próximo
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            <Button onClick={handleNext}>Próximo <ArrowRight className="w-4 h-4 ml-2" /></Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
