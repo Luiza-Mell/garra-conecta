@@ -196,9 +196,13 @@ export type Database = {
           legal_rep_phone: string | null
           legal_rep_race: string | null
           logo_url: string | null
+          municipalities_count: string | null
           name: string
+          ods: string[] | null
           organization_nature: string | null
           phone: string | null
+          program_category: string | null
+          project_axis: string | null
           registration_completed: boolean
           social_media: string | null
           state: string | null
@@ -227,9 +231,13 @@ export type Database = {
           legal_rep_phone?: string | null
           legal_rep_race?: string | null
           logo_url?: string | null
+          municipalities_count?: string | null
           name: string
+          ods?: string[] | null
           organization_nature?: string | null
           phone?: string | null
+          program_category?: string | null
+          project_axis?: string | null
           registration_completed?: boolean
           social_media?: string | null
           state?: string | null
@@ -258,9 +266,13 @@ export type Database = {
           legal_rep_phone?: string | null
           legal_rep_race?: string | null
           logo_url?: string | null
+          municipalities_count?: string | null
           name?: string
+          ods?: string[] | null
           organization_nature?: string | null
           phone?: string | null
+          program_category?: string | null
+          project_axis?: string | null
           registration_completed?: boolean
           social_media?: string | null
           state?: string | null
