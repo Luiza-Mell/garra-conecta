@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, Camera, Key, Loader2, Save, User } from "lucide-react";
+import { Building2, Camera, Check, Eye, EyeOff, Key, Loader2, Save, User, X } from "lucide-react";
 import { toast } from "sonner";
 
 const OngProfile = () => {
@@ -172,9 +172,20 @@ const OngProfile = () => {
     }
   };
 
+  const passwordCriteria = useMemo(() => [
+    { label: "Mínimo de 8 caracteres", met: newPassword.length >= 8 },
+    { label: "Máximo de 20 caracteres", met: newPassword.length > 0 && newPassword.length <= 20 },
+    { label: "1 letra maiúscula", met: /[A-Z]/.test(newPassword) },
+    { label: "1 letra minúscula", met: /[a-z]/.test(newPassword) },
+    { label: "1 número", met: /[0-9]/.test(newPassword) },
+    { label: "1 caractere especial", met: /[^A-Za-z0-9]/.test(newPassword) },
+    { label: "Confirmação de senha igual", met: newPassword.length > 0 && newPassword === confirmNewPassword },
+  ], [newPassword, confirmNewPassword]);
+
+  const allPasswordCriteriaMet = passwordCriteria.every(c => c.met);
+
   const handleChangePassword = async () => {
-    if (newPassword.length < 6) { toast.error("A nova senha deve ter pelo menos 6 caracteres."); return; }
-    if (newPassword !== confirmNewPassword) { toast.error("As senhas não coincidem."); return; }
+    if (!allPasswordCriteriaMet) return;
 
     setChangingPassword(true);
     try {
@@ -356,14 +367,33 @@ const OngProfile = () => {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="new_password">Nova Senha</Label>
-                  <Input id="new_password" type="password" placeholder="Mínimo 6 caracteres" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                  <div className="relative">
+                    <Input id="new_password" type={showPassword ? "text" : "password"} placeholder="Digite sua nova senha" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} maxLength={20} />
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm_password">Confirmar Nova Senha</Label>
-                  <Input id="confirm_password" type="password" placeholder="Repita a nova senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+                  <div className="relative">
+                    <Input id="confirm_password" type={showPassword ? "text" : "password"} placeholder="Confirme sua nova senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} maxLength={20} />
+                  </div>
                 </div>
+                <div className="rounded-lg border p-3 space-y-1.5 bg-muted/30">
+                  <p className="text-sm font-medium text-foreground mb-2">Critérios da senha:</p>
+                  {passwordCriteria.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      {c.met ? <Check className="w-4 h-4 text-green-600 shrink-0" /> : <X className="w-4 h-4 text-destructive shrink-0" />}
+                      <span className={c.met ? "text-green-600" : "text-destructive"}>{c.label}</span>
+                    </div>
+                  ))}
+                </div>
+                {confirmNewPassword.length > 0 && newPassword !== confirmNewPassword && (
+                  <p className="text-sm text-destructive">As senhas não coincidem.</p>
+                )}
                 <div className="flex gap-2">
-                  <Button onClick={handleChangePassword} disabled={changingPassword}>
+                  <Button onClick={handleChangePassword} disabled={!allPasswordCriteriaMet || changingPassword}>
                     {changingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Key className="w-4 h-4 mr-2" />}
                     Confirmar Alteração
                   </Button>
