@@ -69,7 +69,7 @@ const OngDashboard = () => {
 
       const { data: orgData } = await supabase
         .from("organizations")
-        .select("id, name, registration_completed")
+        .select("id, name, registration_completed, created_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
