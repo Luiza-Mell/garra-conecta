@@ -5,9 +5,11 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Users, Building2, DollarSign, Target, MapPin, Loader2, TrendingUp,
-  BarChart3, Activity, Filter,
+  BarChart3, Activity, Filter, ChevronDown, FileText, Globe, Phone, Mail,
+  Calendar, Hash, Layers,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
