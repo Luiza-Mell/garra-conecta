@@ -52,23 +52,75 @@ const App = () => (
             } />
 
             {/* ONG Routes */}
-            <Route path="/ong/cadastro" element={<OngRegistration />} />
-            <Route path="/ong/dashboard" element={<OngDashboard />} />
-            <Route path="/ong/relatorios" element={<OngReports />} />
-            <Route path="/ong/novo-relatorio" element={<NewReport />} />
-            <Route path="/ong/relatorio/:id" element={<NewReport />} />
-            <Route path="/ong/pendentes" element={<PendingReports />} />
-            <Route path="/ong/indicadores" element={<Indicators />} />
-            <Route path="/ong/perfil" element={<OngProfile />} />
+            <Route path="/ong/cadastro" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <OngRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/dashboard" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <OngDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/relatorios" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <OngReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/novo-relatorio" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <NewReport />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/relatorio/:id" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <NewReport />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/pendentes" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <PendingReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/indicadores" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <Indicators />
+              </ProtectedRoute>
+            } />
+            <Route path="/ong/perfil" element={
+              <ProtectedRoute allowedRoles={["organization"]}>
+                <OngProfile />
+              </ProtectedRoute>
+            } />
 
             {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/revisao" element={<ReviewReports />} />
-            <Route path="/admin/organizacoes" element={<AdminOrganizations />} />
-            <Route path="/admin/organizacao/:id" element={<AdminOrganizationDetail />} />
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/revisao" element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <ReviewReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/organizacoes" element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminOrganizations />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/organizacao/:id" element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminOrganizationDetail />
+              </ProtectedRoute>
+            } />
 
             {/* Supporter Routes */}
-            <Route path="/apoiador/dashboard" element={<SupporterDashboard />} />
+            <Route path="/apoiador/dashboard" element={
+              <ProtectedRoute allowedRoles={["supporter"]}>
+                <SupporterDashboard />
+              </ProtectedRoute>
+            } />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
