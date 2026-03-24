@@ -16,13 +16,13 @@ import {
   Building2,
   HandHeart,
   Clock,
-  Bell,
   HelpCircle,
   Settings,
   BarChart3,
 } from "lucide-react";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import NotificationBell from "@/components/NotificationBell";
 import logoGarra from "@/assets/logo-instituto-garra.svg";
 
 interface DashboardLayoutProps {
