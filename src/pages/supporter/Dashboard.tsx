@@ -43,12 +43,21 @@ interface OrgData {
   annual_revenue: string | null;
   legal_rep_gender: string | null;
   legal_rep_race: string | null;
+  legal_rep_name: string | null;
+  legal_rep_email: string | null;
+  legal_rep_phone: string | null;
   organization_nature: string | null;
   team_structure: string[] | null;
   program_category: string | null;
   project_axis: string | null;
   ods: string[] | null;
   municipalities_count: string | null;
+  description: string | null;
+  phone: string | null;
+  website: string | null;
+  address: string | null;
+  cnpj: string | null;
+  created_at: string;
 }
 
 const buildPieData = (items: string[]) => {
