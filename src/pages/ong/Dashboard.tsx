@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { startOfMonth, addMonths, isBefore, parseISO, format as fnsFormat } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +21,7 @@ import {
   Target,
   BarChart3,
   ArrowUpRight,
-  DollarSign,
+  AlertTriangle,
 } from "lucide-react";
 import { format, startOfYear, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -56,6 +57,7 @@ const OngDashboard = () => {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [allReports, setAllReports] = useState<Report[]>([]);
+  const [missingCount, setMissingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ const OngDashboard = () => {
 
       const { data: orgData } = await supabase
         .from("organizations")
-        .select("id, name, registration_completed")
+        .select("id, name, registration_completed, created_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -89,6 +91,20 @@ const OngDashboard = () => {
         if (reportsData) {
           setAllReports(reportsData);
           setReports(reportsData.slice(0, 5));
+
+          // Calculate missing months
+          const registrationDate = parseISO(orgData.created_at);
+          const registrationMonth = startOfMonth(registrationDate);
+          const currentMonth = startOfMonth(new Date());
+          const existingMonths = new Set(reportsData.map((r: Report) => r.reference_month.slice(0, 7)));
+          let count = 0;
+          let checkMonth = registrationMonth;
+          while (isBefore(checkMonth, currentMonth) || checkMonth.getTime() === currentMonth.getTime()) {
+            const monthKey = fnsFormat(checkMonth, "yyyy-MM");
+            if (!existingMonths.has(monthKey)) count++;
+            checkMonth = addMonths(checkMonth, 1);
+          }
+          setMissingCount(count);
         }
       }
 
@@ -155,6 +171,30 @@ const OngDashboard = () => {
             </Link>
           </Button>
         </div>
+
+        {/* Alert for missing reports */}
+        {missingCount > 0 && (
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-destructive">
+                      {missingCount} relatório(s) pendente(s)
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Você possui meses sem relatório enviado. Envie-os para manter o acompanhamento em dia.
+                    </p>
+                  </div>
+                </div>
+                <Button variant="destructive" size="sm" asChild>
+                  <Link to="/ong/pendentes">Ver Pendentes</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
