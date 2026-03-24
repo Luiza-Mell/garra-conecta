@@ -21,7 +21,7 @@ import {
   Target,
   BarChart3,
   ArrowUpRight,
-  DollarSign,
+  AlertTriangle,
 } from "lucide-react";
 import { format, startOfYear, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
