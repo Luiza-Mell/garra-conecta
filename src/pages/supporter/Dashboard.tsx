@@ -119,7 +119,7 @@ const SupporterDashboard = () => {
       if (!user) { setLoading(false); return; }
       const { data: orgs } = await supabase
         .from("organizations")
-        .select("id, name, state, city, areas_of_action, annual_revenue, legal_rep_gender, legal_rep_race, organization_nature, team_structure, program_category, project_axis, ods, municipalities_count")
+        .select("id, name, state, city, areas_of_action, annual_revenue, legal_rep_gender, legal_rep_race, legal_rep_name, legal_rep_email, legal_rep_phone, organization_nature, team_structure, program_category, project_axis, ods, municipalities_count, description, phone, website, address, cnpj, created_at")
         .eq("registration_completed", true);
       if (orgs) setOrganizations(orgs as any);
 
