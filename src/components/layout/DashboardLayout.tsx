@@ -84,10 +84,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/revisao", label: "Revisão de Relatórios", icon: FileText },
     { href: "/admin/organizacoes", label: "Organizações", icon: Building2 },
+    { href: "/ong/perfil", label: "Editar Perfil", icon: Settings },
   ];
 
   const supporterNavItems = [
     { href: "/apoiador/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/ong/perfil", label: "Editar Perfil", icon: Settings },
   ];
 
   const navItems = userRole === "organization" ? orgNavItems : userRole === "supporter" ? supporterNavItems : adminNavItems;
