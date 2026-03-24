@@ -64,6 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        const pwChanged = session.user.user_metadata?.password_changed === true;
+        setMustChangePassword(!pwChanged);
         fetchUserRole(session.user.id);
       }
       
