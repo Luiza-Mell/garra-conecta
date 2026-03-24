@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, userRole, loading } = useAuth();
+  const { user, userRole, loading, mustChangePassword } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -22,6 +22,11 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // Force password change on first access (except if already on that page)
+  if (mustChangePassword && location.pathname !== "/alterar-senha") {
+    return <Navigate to="/alterar-senha" replace />;
   }
 
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {

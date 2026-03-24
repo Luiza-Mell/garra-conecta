@@ -45,6 +45,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/alterar-senha" element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            } />
 
             {/* ONG Routes */}
             <Route path="/ong/cadastro" element={<OngRegistration />} />
