@@ -91,6 +91,20 @@ const OngDashboard = () => {
         if (reportsData) {
           setAllReports(reportsData);
           setReports(reportsData.slice(0, 5));
+
+          // Calculate missing months
+          const registrationDate = parseISO(orgData.created_at);
+          const registrationMonth = startOfMonth(registrationDate);
+          const currentMonth = startOfMonth(new Date());
+          const existingMonths = new Set(reportsData.map((r: Report) => r.reference_month.slice(0, 7)));
+          let count = 0;
+          let checkMonth = registrationMonth;
+          while (isBefore(checkMonth, currentMonth) || checkMonth.getTime() === currentMonth.getTime()) {
+            const monthKey = fnsFormat(checkMonth, "yyyy-MM");
+            if (!existingMonths.has(monthKey)) count++;
+            checkMonth = addMonths(checkMonth, 1);
+          }
+          setMissingCount(count);
         }
       }
 
