@@ -172,9 +172,20 @@ const OngProfile = () => {
     }
   };
 
+  const passwordCriteria = useMemo(() => [
+    { label: "Mínimo de 8 caracteres", met: newPassword.length >= 8 },
+    { label: "Máximo de 20 caracteres", met: newPassword.length > 0 && newPassword.length <= 20 },
+    { label: "1 letra maiúscula", met: /[A-Z]/.test(newPassword) },
+    { label: "1 letra minúscula", met: /[a-z]/.test(newPassword) },
+    { label: "1 número", met: /[0-9]/.test(newPassword) },
+    { label: "1 caractere especial", met: /[^A-Za-z0-9]/.test(newPassword) },
+    { label: "Confirmação de senha igual", met: newPassword.length > 0 && newPassword === confirmNewPassword },
+  ], [newPassword, confirmNewPassword]);
+
+  const allPasswordCriteriaMet = passwordCriteria.every(c => c.met);
+
   const handleChangePassword = async () => {
-    if (newPassword.length < 6) { toast.error("A nova senha deve ter pelo menos 6 caracteres."); return; }
-    if (newPassword !== confirmNewPassword) { toast.error("As senhas não coincidem."); return; }
+    if (!allPasswordCriteriaMet) return;
 
     setChangingPassword(true);
     try {
