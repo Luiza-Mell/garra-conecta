@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, Camera, Key, Loader2, Save, User } from "lucide-react";
+import { Building2, Camera, Check, Eye, EyeOff, Key, Loader2, Save, User, X } from "lucide-react";
 import { toast } from "sonner";
 
 const OngProfile = () => {
