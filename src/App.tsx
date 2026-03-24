@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
+import ChangePassword from "./pages/ChangePassword";
 
 // ONG Pages
 import OngDashboard from "./pages/ong/Dashboard";
@@ -44,6 +45,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/alterar-senha" element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            } />
 
             {/* ONG Routes */}
             <Route path="/ong/cadastro" element={<OngRegistration />} />

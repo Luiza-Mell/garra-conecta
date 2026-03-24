@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null;
   userRole: UserRole | null;
   loading: boolean;
+  mustChangePassword: boolean;
   signUp: (email: string, password: string, role: UserRole, additionalData?: Record<string, unknown>) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -21,6 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mustChangePassword, setMustChangePassword] = useState(false);
 
   const fetchUserRole = async (userId: string) => {
     const { data, error } = await supabase
@@ -43,11 +45,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          const pwChanged = session.user.user_metadata?.password_changed === true;
+          setMustChangePassword(!pwChanged);
           setTimeout(() => {
             fetchUserRole(session.user.id);
           }, 0);
         } else {
           setUserRole(null);
+          setMustChangePassword(false);
         }
         
         setLoading(false);
@@ -59,6 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        const pwChanged = session.user.user_metadata?.password_changed === true;
+        setMustChangePassword(!pwChanged);
         fetchUserRole(session.user.id);
       }
       
@@ -116,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         userRole,
         loading,
+        mustChangePassword,
         signUp,
         signIn,
         signOut,
