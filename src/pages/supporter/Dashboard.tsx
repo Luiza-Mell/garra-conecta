@@ -5,9 +5,11 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Users, Building2, DollarSign, Target, MapPin, Loader2, TrendingUp,
-  BarChart3, Activity, Filter,
+  BarChart3, Activity, Filter, ChevronDown, FileText, Globe, Phone, Mail,
+  Calendar, Hash, Layers,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -41,12 +43,21 @@ interface OrgData {
   annual_revenue: string | null;
   legal_rep_gender: string | null;
   legal_rep_race: string | null;
+  legal_rep_name: string | null;
+  legal_rep_email: string | null;
+  legal_rep_phone: string | null;
   organization_nature: string | null;
   team_structure: string[] | null;
   program_category: string | null;
   project_axis: string | null;
   ods: string[] | null;
   municipalities_count: string | null;
+  description: string | null;
+  phone: string | null;
+  website: string | null;
+  address: string | null;
+  cnpj: string | null;
+  created_at: string;
 }
 
 const buildPieData = (items: string[]) => {
@@ -108,7 +119,7 @@ const SupporterDashboard = () => {
       if (!user) { setLoading(false); return; }
       const { data: orgs } = await supabase
         .from("organizations")
-        .select("id, name, state, city, areas_of_action, annual_revenue, legal_rep_gender, legal_rep_race, organization_nature, team_structure, program_category, project_axis, ods, municipalities_count")
+        .select("id, name, state, city, areas_of_action, annual_revenue, legal_rep_gender, legal_rep_race, legal_rep_name, legal_rep_email, legal_rep_phone, organization_nature, team_structure, program_category, project_axis, ods, municipalities_count, description, phone, website, address, cnpj, created_at")
         .eq("registration_completed", true);
       if (orgs) setOrganizations(orgs as any);
 
@@ -419,49 +430,171 @@ const SupporterDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Organizations Table */}
+        {/* Organizations Cards */}
         <Card className="border-border">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Building2 className="w-4 h-4 text-primary" /> ONGs Apoiadas ({filteredOrgs.length})
             </CardTitle>
+            <CardDescription className="text-xs">Clique em uma ONG para ver detalhes completos</CardDescription>
           </CardHeader>
           <CardContent className="px-4 pb-4">
             {filteredOrgs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">Nenhuma organização encontrada</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">Organização</th>
-                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">Estado</th>
-                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">Categoria</th>
-                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">Áreas</th>
-                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">Receita</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredOrgs.map(org => (
-                      <tr key={org.id} className="border-b border-border/50 hover:bg-muted/30">
-                        <td className="py-2.5 px-3 font-medium text-foreground">{org.name}</td>
-                        <td className="py-2.5 px-3 text-muted-foreground">{org.state || "—"}</td>
-                        <td className="py-2.5 px-3 text-muted-foreground text-xs">{org.program_category || "—"}</td>
-                        <td className="py-2.5 px-3">
-                          <div className="flex flex-wrap gap-1">
-                            {org.areas_of_action?.slice(0, 2).map(a => (
-                              <Badge key={a} variant="outline" className="text-xs">{a}</Badge>
-                            ))}
-                            {(org.areas_of_action?.length || 0) > 2 && (
-                              <Badge variant="outline" className="text-xs">+{(org.areas_of_action?.length || 0) - 2}</Badge>
+              <div className="space-y-3">
+                {filteredOrgs.map(org => {
+                  const orgReports = reports.filter(r => r.organization_id === org.id);
+                  const orgParticipants = orgReports.reduce((a: number, r: any) => a + (r.participants_count || 0), 0);
+                  return (
+                    <Collapsible key={org.id}>
+                      <CollapsibleTrigger className="w-full">
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/40 hover:bg-muted/70 transition-colors text-left">
+                          <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <Building2 className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-foreground truncate">{org.name}</p>
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                                {org.state && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{org.city ? `${org.city}, ${org.state}` : org.state}</span>}
+                                {org.program_category && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{org.program_category}</Badge>}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                              <p className="text-sm font-bold text-foreground">{orgParticipants.toLocaleString()}</p>
+                              <p className="text-[10px] text-muted-foreground">impactados</p>
+                            </div>
+                            <div className="text-right hidden sm:block">
+                              <p className="text-sm font-bold text-foreground">{orgReports.length}</p>
+                              <p className="text-[10px] text-muted-foreground">relatórios</p>
+                            </div>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform duration-200" />
+                          </div>
+                        </div>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mx-2 mt-1 mb-2 p-4 rounded-lg border border-border bg-card space-y-4">
+                          {/* Basic info row */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {org.cnpj && (
+                              <div className="flex items-start gap-2">
+                                <Hash className="w-3.5 h-3.5 text-muted-foreground mt-0.5" />
+                                <div><p className="text-[10px] text-muted-foreground">CNPJ</p><p className="text-xs font-medium text-foreground">{org.cnpj}</p></div>
+                              </div>
+                            )}
+                            {org.phone && (
+                              <div className="flex items-start gap-2">
+                                <Phone className="w-3.5 h-3.5 text-muted-foreground mt-0.5" />
+                                <div><p className="text-[10px] text-muted-foreground">Telefone</p><p className="text-xs font-medium text-foreground">{org.phone}</p></div>
+                              </div>
+                            )}
+                            {org.website && (
+                              <div className="flex items-start gap-2">
+                                <Globe className="w-3.5 h-3.5 text-muted-foreground mt-0.5" />
+                                <div><p className="text-[10px] text-muted-foreground">Website</p><a href={org.website.startsWith("http") ? org.website : `https://${org.website}`} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary hover:underline truncate block max-w-[150px]">{org.website}</a></div>
+                              </div>
+                            )}
+                            {org.address && (
+                              <div className="flex items-start gap-2">
+                                <MapPin className="w-3.5 h-3.5 text-muted-foreground mt-0.5" />
+                                <div><p className="text-[10px] text-muted-foreground">Endereço</p><p className="text-xs font-medium text-foreground">{org.address}</p></div>
+                              </div>
                             )}
                           </div>
-                        </td>
-                        <td className="py-2.5 px-3 text-muted-foreground text-xs">{org.annual_revenue || "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+                          {org.description && (
+                            <div>
+                              <p className="text-[10px] text-muted-foreground mb-1">Descrição</p>
+                              <p className="text-xs text-foreground leading-relaxed">{org.description}</p>
+                            </div>
+                          )}
+
+                          {/* Tags grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            {/* Areas de atuação */}
+                            {org.areas_of_action && org.areas_of_action.length > 0 && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground mb-1.5 flex items-center gap-1"><Target className="w-3 h-3" />Áreas de Atuação</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {org.areas_of_action.map(a => <Badge key={a} variant="outline" className="text-[10px] px-1.5 py-0">{a}</Badge>)}
+                                </div>
+                              </div>
+                            )}
+                            {/* ODS */}
+                            {org.ods && org.ods.length > 0 && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground mb-1.5 flex items-center gap-1"><Layers className="w-3 h-3" />ODS</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {org.ods.map(o => <Badge key={o} className="bg-primary/10 text-primary text-[10px] px-1.5 py-0 border-0">{o.length > 35 ? o.slice(0, 33) + "…" : o}</Badge>)}
+                                </div>
+                              </div>
+                            )}
+                            {/* Equipe */}
+                            {org.team_structure && org.team_structure.length > 0 && (
+                              <div>
+                                <p className="text-[10px] text-muted-foreground mb-1.5 flex items-center gap-1"><Users className="w-3 h-3" />Estrutura da Equipe</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {org.team_structure.map(t => <Badge key={t} variant="secondary" className="text-[10px] px-1.5 py-0">{t}</Badge>)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Detailed info */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-border">
+                            {org.organization_nature && (
+                              <div><p className="text-[10px] text-muted-foreground">Natureza</p><p className="text-xs font-medium text-foreground">{org.organization_nature}</p></div>
+                            )}
+                            {org.project_axis && (
+                              <div><p className="text-[10px] text-muted-foreground">Eixo do Projeto</p><p className="text-xs font-medium text-foreground">{org.project_axis}</p></div>
+                            )}
+                            {org.annual_revenue && (
+                              <div><p className="text-[10px] text-muted-foreground">Receita Anual</p><p className="text-xs font-medium text-foreground">{org.annual_revenue}</p></div>
+                            )}
+                            {org.municipalities_count && (
+                              <div><p className="text-[10px] text-muted-foreground">Municípios Atendidos</p><p className="text-xs font-medium text-foreground">{org.municipalities_count}</p></div>
+                            )}
+                          </div>
+
+                          {/* Representative */}
+                          {org.legal_rep_name && (
+                            <div className="pt-2 border-t border-border">
+                              <p className="text-[10px] text-muted-foreground mb-2 flex items-center gap-1"><Users className="w-3 h-3" />Representante Legal</p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div><p className="text-[10px] text-muted-foreground">Nome</p><p className="text-xs font-medium text-foreground">{org.legal_rep_name}</p></div>
+                                {org.legal_rep_email && <div><p className="text-[10px] text-muted-foreground">Email</p><p className="text-xs font-medium text-foreground truncate">{org.legal_rep_email}</p></div>}
+                                {org.legal_rep_gender && <div><p className="text-[10px] text-muted-foreground">Gênero</p><p className="text-xs font-medium text-foreground">{org.legal_rep_gender}</p></div>}
+                                {org.legal_rep_race && <div><p className="text-[10px] text-muted-foreground">Raça/Cor</p><p className="text-xs font-medium text-foreground">{org.legal_rep_race}</p></div>}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Report stats */}
+                          <div className="pt-2 border-t border-border">
+                            <p className="text-[10px] text-muted-foreground mb-2 flex items-center gap-1"><FileText className="w-3 h-3" />Relatórios ({orgReports.length})</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="bg-success/10 rounded-md p-2 text-center">
+                                <p className="text-lg font-bold text-success">{orgReports.filter((r: any) => r.status === "approved").length}</p>
+                                <p className="text-[10px] text-muted-foreground">Aprovados</p>
+                              </div>
+                              <div className="bg-warning/10 rounded-md p-2 text-center">
+                                <p className="text-lg font-bold text-warning">{orgReports.filter((r: any) => r.status === "submitted").length}</p>
+                                <p className="text-[10px] text-muted-foreground">Enviados</p>
+                              </div>
+                              <div className="bg-primary/10 rounded-md p-2 text-center">
+                                <p className="text-lg font-bold text-primary">{orgParticipants.toLocaleString()}</p>
+                                <p className="text-[10px] text-muted-foreground">Impactados</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
             )}
           </CardContent>
