@@ -172,6 +172,30 @@ const OngDashboard = () => {
           </Button>
         </div>
 
+        {/* Alert for missing reports */}
+        {missingCount > 0 && (
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-destructive">
+                      {missingCount} relatório(s) pendente(s)
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Você possui meses sem relatório enviado. Envie-os para manter o acompanhamento em dia.
+                    </p>
+                  </div>
+                </div>
+                <Button variant="destructive" size="sm" asChild>
+                  <Link to="/ong/pendentes">Ver Pendentes</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="card-hover">
