@@ -57,6 +57,7 @@ const OngDashboard = () => {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [allReports, setAllReports] = useState<Report[]>([]);
+  const [missingCount, setMissingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
