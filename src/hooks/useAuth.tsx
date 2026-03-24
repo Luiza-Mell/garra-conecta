@@ -123,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         userRole,
         loading,
+        mustChangePassword,
         signUp,
         signIn,
         signOut,
