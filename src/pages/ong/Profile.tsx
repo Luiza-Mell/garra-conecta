@@ -40,12 +40,6 @@ const OngProfile = () => {
     logo_url: "",
   });
 
-  const [supporterData, setSupporterData] = useState({
-    id: "",
-    name: "",
-    company: "",
-    phone: "",
-  });
 
   useEffect(() => {
     const fetchData = async () => {
