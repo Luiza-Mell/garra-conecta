@@ -122,6 +122,11 @@ const App = () => (
                 <SupporterDashboard />
               </ProtectedRoute>
             } />
+            <Route path="/apoiador/perfil" element={
+              <ProtectedRoute allowedRoles={["supporter"]}>
+                <SupporterProfile />
+              </ProtectedRoute>
+            } />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
