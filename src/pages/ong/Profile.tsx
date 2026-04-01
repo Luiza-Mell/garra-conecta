@@ -133,16 +133,6 @@ const OngProfile = () => {
           })
           .eq("id", orgData.id);
         if (orgError) throw orgError;
-      } else if (userRole === "supporter" && supporterData.id) {
-        const { error: supError } = await supabase
-          .from("supporters")
-          .update({
-            name: supporterData.name,
-            company: supporterData.company || null,
-            phone: supporterData.phone || null,
-          })
-          .eq("id", supporterData.id);
-        if (supError) throw supError;
       }
 
       toast.success("Perfil atualizado com sucesso!");
