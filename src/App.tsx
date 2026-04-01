@@ -30,6 +30,7 @@ import AdminOrganizationDetail from "./pages/admin/OrganizationDetail";
 
 // Supporter Pages
 import SupporterDashboard from "./pages/supporter/Dashboard";
+import SupporterProfile from "./pages/supporter/Profile";
 
 const queryClient = new QueryClient();
 
