@@ -165,7 +165,8 @@ const OngProfile = () => {
       toast.success("Senha alterada com sucesso!");
       setNewPassword("");
       setConfirmNewPassword("");
-      setShowPassword(false);
+      setShowPasswordSection(false);
+      setShowPasswordText(false);
     } catch {
       toast.error("Erro ao alterar a senha.");
     } finally {
