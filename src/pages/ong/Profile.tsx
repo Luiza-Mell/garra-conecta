@@ -184,7 +184,7 @@ const OngProfile = () => {
     );
   }
 
-  const displayName = userRole === "organization" ? orgData.name : userRole === "supporter" ? supporterData.name : profileData.full_name;
+  const displayName = orgData.name || profileData.full_name;
 
   return (
     <DashboardLayout>
