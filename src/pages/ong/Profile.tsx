@@ -18,7 +18,8 @@ const OngProfile = () => {
   const [uploading, setUploading] = useState(false);
 
   // Password change
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [showPasswordText, setShowPasswordText] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
@@ -39,12 +40,6 @@ const OngProfile = () => {
     logo_url: "",
   });
 
-  const [supporterData, setSupporterData] = useState({
-    id: "",
-    name: "",
-    company: "",
-    phone: "",
-  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,20 +74,6 @@ const OngProfile = () => {
             address: org.address || "",
             description: org.description || "",
             logo_url: org.logo_url || "",
-          });
-        }
-      } else if (userRole === "supporter") {
-        const { data: sup } = await supabase
-          .from("supporters")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (sup) {
-          setSupporterData({
-            id: sup.id,
-            name: sup.name || "",
-            company: sup.company || "",
-            phone: sup.phone || "",
           });
         }
       }
@@ -152,16 +133,6 @@ const OngProfile = () => {
           })
           .eq("id", orgData.id);
         if (orgError) throw orgError;
-      } else if (userRole === "supporter" && supporterData.id) {
-        const { error: supError } = await supabase
-          .from("supporters")
-          .update({
-            name: supporterData.name,
-            company: supporterData.company || null,
-            phone: supporterData.phone || null,
-          })
-          .eq("id", supporterData.id);
-        if (supError) throw supError;
       }
 
       toast.success("Perfil atualizado com sucesso!");
@@ -194,7 +165,8 @@ const OngProfile = () => {
       toast.success("Senha alterada com sucesso!");
       setNewPassword("");
       setConfirmNewPassword("");
-      setShowPassword(false);
+      setShowPasswordSection(false);
+      setShowPasswordText(false);
     } catch {
       toast.error("Erro ao alterar a senha.");
     } finally {
@@ -212,7 +184,7 @@ const OngProfile = () => {
     );
   }
 
-  const displayName = userRole === "organization" ? orgData.name : userRole === "supporter" ? supporterData.name : profileData.full_name;
+  const displayName = orgData.name || profileData.full_name;
 
   return (
     <DashboardLayout>
@@ -316,34 +288,6 @@ const OngProfile = () => {
           </Card>
         )}
 
-        {/* Supporter-specific fields */}
-        {userRole === "supporter" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-primary" />
-                Dados do Apoiador
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Nome</Label>
-                  <Input value={supporterData.name} onChange={(e) => setSupporterData((p) => ({ ...p, name: e.target.value }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Empresa</Label>
-                  <Input value={supporterData.company} onChange={(e) => setSupporterData((p) => ({ ...p, company: e.target.value }))} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Telefone</Label>
-                <Input value={supporterData.phone} onChange={(e) => setSupporterData((p) => ({ ...p, phone: e.target.value }))} />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Salvar Alterações
@@ -359,8 +303,8 @@ const OngProfile = () => {
             <CardDescription>Defina uma nova senha para sua conta.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!showPassword ? (
-              <Button variant="outline" onClick={() => setShowPassword(true)}>
+            {!showPasswordSection ? (
+              <Button variant="outline" onClick={() => setShowPasswordSection(true)}>
                 Alterar Senha
               </Button>
             ) : (
@@ -368,24 +312,24 @@ const OngProfile = () => {
                 <div className="space-y-2">
                   <Label htmlFor="new_password">Nova Senha</Label>
                   <div className="relative">
-                    <Input id="new_password" type={showPassword ? "text" : "password"} placeholder="Digite sua nova senha" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} maxLength={20} />
-                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    <Input id="new_password" type={showPasswordText ? "text" : "password"} placeholder="Digite sua nova senha" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} maxLength={20} />
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPasswordText(!showPasswordText)}>
+                      {showPasswordText ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm_password">Confirmar Nova Senha</Label>
                   <div className="relative">
-                    <Input id="confirm_password" type={showPassword ? "text" : "password"} placeholder="Confirme sua nova senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} maxLength={20} />
+                    <Input id="confirm_password" type={showPasswordText ? "text" : "password"} placeholder="Confirme sua nova senha" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} maxLength={20} />
                   </div>
                 </div>
                 <div className="rounded-lg border p-3 space-y-1.5 bg-muted/30">
                   <p className="text-sm font-medium text-foreground mb-2">Critérios da senha:</p>
                   {passwordCriteria.map((c, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm">
-                      {c.met ? <Check className="w-4 h-4 text-green-600 shrink-0" /> : <X className="w-4 h-4 text-destructive shrink-0" />}
-                      <span className={c.met ? "text-green-600" : "text-destructive"}>{c.label}</span>
+                      {c.met ? <Check className="w-4 h-4 text-success shrink-0" /> : <X className="w-4 h-4 text-destructive shrink-0" />}
+                      <span className={c.met ? "text-success" : "text-destructive"}>{c.label}</span>
                     </div>
                   ))}
                 </div>
@@ -397,7 +341,7 @@ const OngProfile = () => {
                     {changingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Key className="w-4 h-4 mr-2" />}
                     Confirmar Alteração
                   </Button>
-                  <Button variant="ghost" onClick={() => { setShowPassword(false); setNewPassword(""); setConfirmNewPassword(""); }}>
+                  <Button variant="ghost" onClick={() => { setShowPasswordSection(false); setShowPasswordText(false); setNewPassword(""); setConfirmNewPassword(""); }}>
                     Cancelar
                   </Button>
                 </div>
