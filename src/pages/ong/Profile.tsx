@@ -76,20 +76,6 @@ const OngProfile = () => {
             logo_url: org.logo_url || "",
           });
         }
-      } else if (userRole === "supporter") {
-        const { data: sup } = await supabase
-          .from("supporters")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (sup) {
-          setSupporterData({
-            id: sup.id,
-            name: sup.name || "",
-            company: sup.company || "",
-            phone: sup.phone || "",
-          });
-        }
       }
 
       setLoading(false);
