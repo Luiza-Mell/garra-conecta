@@ -18,7 +18,8 @@ const OngProfile = () => {
   const [uploading, setUploading] = useState(false);
 
   // Password change
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [showPasswordText, setShowPasswordText] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
