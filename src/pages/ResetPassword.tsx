@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import logoGarra from "@/assets/logo-instituto-garra.svg";
@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Lock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Loader2, Lock, CheckCircle, Check, X, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
@@ -34,18 +35,21 @@ const ResetPassword = () => {
     setChecking(false);
   }, []);
 
+  const criteria = useMemo(() => [
+    { label: "Mínimo de 8 caracteres", met: password.length >= 8 },
+    { label: "Máximo de 20 caracteres", met: password.length > 0 && password.length <= 20 },
+    { label: "1 letra maiúscula", met: /[A-Z]/.test(password) },
+    { label: "1 letra minúscula", met: /[a-z]/.test(password) },
+    { label: "1 número", met: /[0-9]/.test(password) },
+    { label: "1 caractere especial", met: /[^A-Za-z0-9]/.test(password) },
+    { label: "Confirmação de senha igual", met: password.length > 0 && password === confirmPassword },
+  ], [password, confirmPassword]);
+
+  const allMet = criteria.every(c => c.met);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem.");
-      return;
-    }
+    if (!allMet) return;
 
     setLoading(true);
     try {
@@ -111,14 +115,21 @@ const ResetPassword = () => {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="new-password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 pr-10"
+                      maxLength={20}
                       required
-                      minLength={6}
                     />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 
@@ -128,18 +139,34 @@ const ResetPassword = () => {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="confirm-password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="pl-10"
+                      maxLength={20}
                       required
-                      minLength={6}
                     />
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                <div className="rounded-lg border p-3 space-y-1.5 bg-muted/30">
+                  <p className="text-sm font-medium text-foreground mb-2">Critérios da senha:</p>
+                  {criteria.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      {c.met ? (
+                        <Check className="w-4 h-4 text-success shrink-0" />
+                      ) : (
+                        <X className="w-4 h-4 text-destructive shrink-0" />
+                      )}
+                      <span className={c.met ? "text-success" : "text-destructive"}>
+                        {c.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <Button type="submit" className="w-full" size="lg" disabled={!allMet || loading}>
                   {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                   Atualizar Senha
                 </Button>
