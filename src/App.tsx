@@ -30,6 +30,7 @@ import AdminOrganizationDetail from "./pages/admin/OrganizationDetail";
 
 // Supporter Pages
 import SupporterDashboard from "./pages/supporter/Dashboard";
+import SupporterProfile from "./pages/supporter/Profile";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,11 @@ const App = () => (
             <Route path="/apoiador/dashboard" element={
               <ProtectedRoute allowedRoles={["supporter"]}>
                 <SupporterDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/apoiador/perfil" element={
+              <ProtectedRoute allowedRoles={["supporter"]}>
+                <SupporterProfile />
               </ProtectedRoute>
             } />
 

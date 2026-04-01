@@ -403,7 +403,7 @@ const SupporterDashboard = () => {
             <CardDescription className="text-xs">Localização das ONGs apoiadas por estado</CardDescription>
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <div className="relative w-full max-w-md mx-auto" style={{ paddingBottom: "100%" }}>
+            <div className="relative w-full max-w-sm mx-auto" style={{ paddingBottom: "60%" }}>
               <svg viewBox="0 0 100 105" className="absolute inset-0 w-full h-full">
                 <path
                   d="M20,10 Q35,5 50,12 Q65,18 75,30 Q80,40 78,50 Q75,60 70,70 Q65,78 60,82 Q52,88 48,90 Q42,95 38,92 Q32,88 30,80 Q25,70 20,65 Q15,58 12,50 Q10,40 12,30 Q15,20 20,10 Z"

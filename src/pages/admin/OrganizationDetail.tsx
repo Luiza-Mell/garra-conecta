@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -8,13 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Building2, User, MapPin, Phone, Mail, Globe, Users, DollarSign,
-  Target, FileText, ArrowLeft, Loader2, Calendar, CheckCircle2, Clock, AlertCircle, GraduationCap, Eye,
+  Target, FileText, ArrowLeft, Loader2, Calendar, CheckCircle2, Clock, AlertCircle, GraduationCap, Eye, Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/sonner";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   draft: { label: "Rascunho", className: "status-draft" },
@@ -26,10 +27,13 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 const AdminOrganizationDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [org, setOrg] = useState<any>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +58,23 @@ const AdminOrganizationDetail = () => {
     };
     fetchData();
   }, [user, id]);
+
+  const handleDelete = async () => {
+    if (!org) return;
+    setDeleting(true);
+    const { data, error } = await supabase.functions.invoke("admin-manage-users", {
+      body: { action: "delete_org", userId: org.user_id, orgId: org.id },
+    });
+    setDeleting(false);
+
+    if (error || data?.error) {
+      toast.error(data?.error || "Erro ao remover ONG.");
+      return;
+    }
+
+    toast.success("ONG removida com sucesso.");
+    navigate("/admin/organizacoes");
+  };
 
   if (loading) {
     return <DashboardLayout><div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div></DashboardLayout>;
@@ -107,21 +128,25 @@ const AdminOrganizationDetail = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/admin/organizacoes"><ArrowLeft className="w-4 h-4 mr-1" /> Voltar</Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">{org.name}</h1>
-            {org.fantasy_name && <p className="text-muted-foreground text-sm">{org.fantasy_name}</p>}
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/organizacoes"><ArrowLeft className="w-4 h-4 mr-1" /> Voltar</Link>
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">{org.name}</h1>
+              {org.fantasy_name && <p className="text-muted-foreground text-sm">{org.fantasy_name}</p>}
+            </div>
+            <Badge className={org.registration_completed ? "status-approved" : "status-submitted"}>
+              {org.registration_completed ? "Cadastro Completo" : "Cadastro Pendente"}
+            </Badge>
           </div>
-          <Badge className={org.registration_completed ? "status-approved" : "status-submitted"}>
-            {org.registration_completed ? "Cadastro Completo" : "Cadastro Pendente"}
-          </Badge>
+          <Button variant="destructive" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+            <Trash2 className="w-4 h-4 mr-1" /> Excluir ONG
+          </Button>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Institutional Info */}
           <Card>
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><Building2 className="w-4 h-4 text-primary" /> Dados Institucionais</CardTitle></CardHeader>
             <CardContent className="space-y-1">
@@ -134,7 +159,6 @@ const AdminOrganizationDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Address & Contact */}
           <Card>
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Endereço e Contato</CardTitle></CardHeader>
             <CardContent className="space-y-1">
@@ -148,7 +172,6 @@ const AdminOrganizationDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Legal Representative */}
           <Card>
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Representante Legal</CardTitle></CardHeader>
             <CardContent className="space-y-1">
@@ -161,7 +184,6 @@ const AdminOrganizationDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Team & Revenue */}
           <Card>
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary" /> Equipe e Receita</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -259,6 +281,25 @@ const AdminOrganizationDetail = () => {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remover Organização</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja remover <strong>{org.name}</strong>? Esta ação é irreversível. Todos os dados, relatórios e o acesso desta ONG serão permanentemente removidos.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+              {deleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Sim, remover ONG
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </DashboardLayout>
